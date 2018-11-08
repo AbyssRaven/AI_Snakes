@@ -46,7 +46,7 @@ public class GameControllerScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () 
 	{
-		InvokeRepeating("CreateMatrix", 0.5f, 0.5f);
+//		InvokeRepeating("CreateMatrix", 0.5f, 0.5f);
 		InvokeRepeating("MovementRepeating", 0.5f, 0.5f);
 		Food();
 	}
