@@ -12,40 +12,30 @@ namespace Ai_Snakes.Scripts.GameControllerScript
 
         enum Direction
         {
-            North,
-            East,
-            South,
-            West,
+            Up,
+            Right,
+            Down,
+            Left,
         }
 
-        [SerializeField]
-        Vector2Int _fieldSize = new Vector2Int(12, 12);
+        [SerializeField] Vector2Int _fieldSize = new Vector2Int(12, 12);
 
-        [SerializeField]
-        private int _maxSize;
-        [SerializeField]
-        private int _size;
-        [SerializeField]
-        private GameObject _snakePrefab;
-        [SerializeField]
-        private GameObject _foodPrefab;
-        [SerializeField]
-        private GameObject _currentFood;
+        [SerializeField] private int _maxSize = 3;
+        [SerializeField] private int _size = 1;
+        [SerializeField] private GameObject _snakePrefab;
+        [SerializeField] private GameObject _foodPrefab;
+        [SerializeField] private GameObject _currentFood;
 
-        [SerializeField]
-        private SnakeScript _head;
-        [SerializeField]
-        private SnakeScript _tail;
+        [SerializeField] private GameObject _head;
+        [SerializeField] private GameObject _tail;
 
-        [SerializeField]
-        private GameObject _squarePrefab;
-        [SerializeField]
-        private GameObject _field;
+        [SerializeField] private int _currentGeneration = 0;
 
-        private GameObject[,] _matrixCells = new GameObject[16, 16];
+        private GameObject[,] _gameField;
         private Vector2 _nextPos;
         private bool _isTraining;
         private float _qualityPointScore;
+        public static Action<String> collision;
 
         //	private int populationSize = 50;
         //	private int generationNumber;
@@ -53,14 +43,17 @@ namespace Ai_Snakes.Scripts.GameControllerScript
         //	private List<NNScript> networks;	
         //	private RaycastHit hit;
 
-        Direction dir = Direction.East;
+        Direction dir = Direction.Right;
 
         // Use this for initialization
         void Start()
         {
-            //		InvokeRepeating("CreateMatrix", 0.5f, 0.5f);
+            _qualityPointScore = 0;
+            
+            CreateGameField();
+
+            StartNextGeneration();
             InvokeRepeating("MovementRepeating", 0.5f, 0.5f);
-            Food();
         }
 
         // Update is called once per frame
@@ -70,12 +63,24 @@ namespace Ai_Snakes.Scripts.GameControllerScript
             GameReset();
         }
 
-        void CreateMatrix()
+        private void CreateGameField()
         {
+            Camera.main.transform.position = new Vector3(_fieldSize.x / 2, _fieldSize.y / 2, Camera.main.transform.position.z);
+            _gameField = new GameObject[_fieldSize.x, _fieldSize.y];
 
+            for(int i = 0; i < _fieldSize.x; i++)
+            {
+                for(int j = 0; j < _fieldSize.y; j++)
+                {
+                    var square = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                    square.transform.SetParent(gameObject.transform);
+                    square.transform.position = new Vector3(i, j, 1);
+                    _gameField[i, j] = square;
+                }
+            }
         }
 
-        void MovementRepeating()
+        private void MovementRepeating()
         {
             Movement();
             if (_size >= _maxSize)
@@ -90,25 +95,25 @@ namespace Ai_Snakes.Scripts.GameControllerScript
             print(dir);
         }
 
-        void Timer()
+        private void Timer()
         {
             _isTraining = false;
         }
 
         private void Movement()
         {
-            GameObject temp;
+            GameObject snakeHead;
             _nextPos = _head.transform.position;
 
             switch (dir)
             {
-                case Direction.North:
+                case Direction.Up:
                     _nextPos = new Vector2(_nextPos.x, _nextPos.y + 1);
                     break;
-                case Direction.South:
+                case Direction.Down:
                     _nextPos = new Vector2(_nextPos.x, _nextPos.y - 1);
                     break;
-                case Direction.West:
+                case Direction.Left:
                     _nextPos = new Vector2(_nextPos.x - 1, _nextPos.y);
                     break;
                 default:
@@ -116,25 +121,25 @@ namespace Ai_Snakes.Scripts.GameControllerScript
                     break;
             }
 
-            temp = Instantiate(_snakePrefab, _nextPos, transform.rotation);
-            _head.SetNextHead(temp.GetComponent<SnakeScript>());
-            _head = temp.GetComponent<SnakeScript>();
+            snakeHead = Instantiate(_snakePrefab, _nextPos, transform.rotation);
+            _head.GetComponent<SnakeScript>().SetNextHead(snakeHead);
+            _head = snakeHead;
             _qualityPointScore -= 0.1f;
         }
 
         private void Tail()
         {
-            SnakeScript temp = _tail;
-            _tail = _tail.GetNextHead();
-            temp.RemoveTail();
+            GameObject snakeTail = _tail;
+            _tail = _tail.GetComponent<SnakeScript>().GetNextHead();
+            Destroy(snakeTail);
         }
 
         private void RandomDirection()
         {
-            if (dir == Direction.North)
+            if (dir == Direction.Up)
             {
                 var temp = (Direction)Random.Range(0, 4);
-                while (temp == Direction.South)
+                while (temp == Direction.Down)
                 {
                     temp = (Direction)Random.Range(0, 4);
                 }
@@ -143,10 +148,10 @@ namespace Ai_Snakes.Scripts.GameControllerScript
                 return;
             }
 
-            if (dir == Direction.East)
+            if (dir == Direction.Right)
             {
                 var temp = (Direction)Random.Range(0, 4);
-                while (temp == Direction.West)
+                while (temp == Direction.Left)
                 {
                     temp = (Direction)Random.Range(0, 4);
                 }
@@ -155,10 +160,10 @@ namespace Ai_Snakes.Scripts.GameControllerScript
                 return;
             }
 
-            if (dir == Direction.South)
+            if (dir == Direction.Down)
             {
                 var temp = (Direction)Random.Range(0, 4);
-                while (temp == Direction.North)
+                while (temp == Direction.Up)
                 {
                     temp = (Direction)Random.Range(0, 4);
                 }
@@ -167,10 +172,10 @@ namespace Ai_Snakes.Scripts.GameControllerScript
                 return;
             }
 
-            if (dir == Direction.West)
+            if (dir == Direction.Left)
             {
                 var temp = (Direction)Random.Range(0, 4);
-                while (temp == Direction.East)
+                while (temp == Direction.Right)
                 {
                     temp = (Direction)Random.Range(0, 4);
                 }
@@ -181,8 +186,8 @@ namespace Ai_Snakes.Scripts.GameControllerScript
 
         void Food()
         {
-            //int xPos = Random.Range(-xBound, xBound);
-            //int yPos = Random.Range(-yBound, yBound);
+            int xPos = Random.Range(0, _fieldSize.x);
+            int yPos = Random.Range(0, _fieldSize.y);
 
             _currentFood = Instantiate(_foodPrefab, new Vector2(xPos, yPos), transform.rotation);
             StartCoroutine(CheckRender(_currentFood));
@@ -204,6 +209,36 @@ namespace Ai_Snakes.Scripts.GameControllerScript
             }
         }
 
+        private void StartNextGeneration()
+        {
+            _currentGeneration++;
+            _qualityPointScore = 0;
+
+            GameObject snakeHead;
+
+            snakeHead = Instantiate(_snakePrefab, new Vector2(_fieldSize.x / 2, _fieldSize.y / 2), transform.rotation);
+            _head = snakeHead;
+            _tail = snakeHead;
+
+            Food();
+        }
+
+        private void WipeClean()
+        {
+            Destroy(_head);
+            Destroy(_tail);
+            Destroy(_currentFood);
+        }
+
+        private void GameReset()
+        {
+            if (_qualityPointScore == -1)
+            {
+                WipeClean();
+                StartNextGeneration();
+            }
+
+        }
 
         IEnumerator CheckRender(GameObject foodObject)
         {
@@ -217,27 +252,6 @@ namespace Ai_Snakes.Scripts.GameControllerScript
                 }
             }
         }
-
-        private void OnEnable()
-        {
-            SnakeScript.collision += Collision;
-        }
-
-        private void OnDisable()
-        {
-            SnakeScript.collision -= Collision;
-        }
-
-        void GameReset()
-        {
-            if (_qualityPointScore == -1)
-            {
-                CancelInvoke("MovementRepeating");
-                SceneManager.LoadScene("Snake_Level");
-            }
-
-        }
-
 
         //	void SnakeEyes() 
         //	{

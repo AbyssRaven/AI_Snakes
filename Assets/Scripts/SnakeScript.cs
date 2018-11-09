@@ -1,39 +1,28 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
-using UnityEditor.IMGUI.Controls;
-using UnityEditorInternal;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
-public class SnakeScript : MonoBehaviour {
+public class SnakeScript : MonoBehaviour
+{
+    private GameObject _nextHead;
 
-	private SnakeScript _nextHead;
-	public static Action<String> collision;
+    public void SetNextHead(GameObject newHead)
+    {
+        _nextHead = newHead;
+    }
 
-	public void SetNextHead(SnakeScript newHead) {
-		_nextHead = newHead;
-	}
-	
-	public SnakeScript GetNextHead() {
-		return _nextHead;
-	}
+    public GameObject GetNextHead()
+    {
+        return _nextHead;
+    }
 
-	public void RemoveTail() 
-	{
-		Destroy(gameObject);
-	}
+    private void OnTriggerEnter(Collider other)
+    {
 
-	private void OnTriggerEnter(Collider other) {
-		if(collision != null) {
-			collision(other.transform.tag);
-		}
-
-		if(other.CompareTag("Food")) 
-		{
-			Destroy(other.gameObject);
-		}
-	}
-
+        if (other.CompareTag("Food"))
+        {
+            Destroy(other.gameObject);
+        }
+    }
 }
+
+
