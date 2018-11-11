@@ -16,7 +16,8 @@ namespace AI_Snakes.Main
         [SerializeField] private GameObject _foodPrefab;
         [SerializeField] private GameObject _currentFood;
         [SerializeField] private GameObject _head;
-        [SerializeField] private GameObject _tail;
+        [SerializeField] private GameObject _lastTail;
+        [SerializeField] private List<GameObject> _tail = new List<GameObject>();
 
         [SerializeField] private bool _isTraining = true;
         [SerializeField] private int _currentGeneration = 0;
@@ -113,11 +114,21 @@ namespace AI_Snakes.Main
         }
 
         private void Food()
-        {
+        {          
             int xPos = Random.Range(1, _fieldSize.x - 1);
             int yPos = Random.Range(1, _fieldSize.y - 1);
 
             _currentFood = Instantiate(_foodPrefab, new Vector2(xPos, yPos), transform.rotation);
+
+            for (int i = 0; i < _tail.Count; i++)
+            {
+                if (_tail[i].transform.position.x == _currentFood.transform.position.x
+                    && _tail[i].transform.position.y == _currentFood.transform.position.y)
+                {
+                    Destroy(_currentFood);
+                    Food();
+                }
+            }
         }
 
         public void Movement()
@@ -142,6 +153,7 @@ namespace AI_Snakes.Main
             }
 
             snakeHead = Instantiate(_snakePrefab, _nextPos, transform.rotation);
+            _tail.Add(_head);
             _head.GetComponent<Snake>().SetNextHead(snakeHead);
             _head = snakeHead;
 
@@ -165,14 +177,16 @@ namespace AI_Snakes.Main
 
         public void Tail()
         {
-            GameObject snakeTail = _tail;
-            _tail = _tail.GetComponent<Snake>().GetNextHead();
-            Destroy(snakeTail);
+            GameObject snakeTail = _lastTail;
+            _lastTail = _lastTail.GetComponent<Snake>().GetNextHead();
+            Destroy(_tail[0]);
+            _tail.RemoveAt(0);
         }
 
         private void StartNextGeneration()
         {
             _currentGeneration++;
+            _tail.Clear();
             _maxSize = 3;
             _size = 1;
             _qualityPointScore = 0;
@@ -181,7 +195,7 @@ namespace AI_Snakes.Main
 
             snakeHead = Instantiate(_snakePrefab, new Vector2(_fieldSize.x / 2, _fieldSize.y / 2), transform.rotation);
             _head = snakeHead;
-            _tail = snakeHead;
+            _lastTail = snakeHead;
 
             Food();
         }
