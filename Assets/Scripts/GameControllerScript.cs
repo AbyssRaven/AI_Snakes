@@ -2,21 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Ai_Snakes.Scripts.Food;
+//using Ai_Snakes.Scripts.Snake;
 using Random = UnityEngine.Random;
 
-namespace Ai_Snakes.Scripts.GameControllerScript
+namespace Ai_Snakes.Scripts.GameController
 {
     public class GameControllerScript : MonoBehaviour
     {
-
-        enum Direction
-        {
-            Up,
-            Right,
-            Down,
-            Left,
-        }
 
         [SerializeField] Vector2Int _fieldSize = new Vector2Int(12, 12);
 
@@ -29,13 +22,13 @@ namespace Ai_Snakes.Scripts.GameControllerScript
         [SerializeField] private GameObject _head;
         [SerializeField] private GameObject _tail;
 
+        [SerializeField] private bool _isTraining = true;
         [SerializeField] private int _currentGeneration = 0;
 
+        [SerializeField] private float _qualityPointScore;
+
         private GameObject[,] _gameField;
-        private Vector2 _nextPos;
-        private bool _isTraining;
-        private float _qualityPointScore;
-        public static Action<String> collision;
+        //private SnakeScript _snakeScript;
 
         //	private int populationSize = 50;
         //	private int generationNumber;
@@ -45,16 +38,23 @@ namespace Ai_Snakes.Scripts.GameControllerScript
 
         Direction dir = Direction.Right;
 
-        // Use this for initialization
+        //private void OnEnable()
+        //{
+        //    SnakeScript.hit += Collision;
+        //}
+
         void Start()
-        {
-            _qualityPointScore = 0;
-            
+        {           
             CreateGameField();
 
             StartNextGeneration();
-            InvokeRepeating("MovementRepeating", 0.5f, 0.5f);
+            
         }
+
+        //private void OnDisable()
+        //{
+        //    SnakeScript.hit = Collision;
+        //}
 
         // Update is called once per frame
         void Update()
@@ -72,27 +72,46 @@ namespace Ai_Snakes.Scripts.GameControllerScript
             {
                 for(int j = 0; j < _fieldSize.y; j++)
                 {
-                    var square = GameObject.CreatePrimitive(PrimitiveType.Quad);
-                    square.transform.SetParent(gameObject.transform);
-                    square.transform.position = new Vector3(i, j, 1);
-                    _gameField[i, j] = square;
+                    if (i == 0 || i == _fieldSize.x - 1)
+                    {
+                        var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+                        wall.AddComponent<SquareScript>()._occupied = true;
+                        wall.AddComponent<Rigidbody>().useGravity = false;
+                        wall.transform.SetParent(gameObject.transform);
+                        wall.GetComponent<Collider>().isTrigger = true;
+                        wall.tag = "Wall";
+
+                        wall.transform.position = new Vector3(i, j, 0);
+                        wall.transform.GetComponent<Renderer>().material.color = new Color(0, 0, 0);
+
+                        _gameField[i, j] = wall;
+
+                    }
+                    else if(j == 0 || j == _fieldSize.y - 1)
+                    {
+                        var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+                        wall.AddComponent<SquareScript>()._occupied = true;
+                        wall.AddComponent<Rigidbody>().useGravity = false;
+                        wall.transform.SetParent(gameObject.transform);
+                        wall.GetComponent<Collider>().isTrigger = true;
+                        wall.tag = "Wall";
+
+                        wall.transform.position = new Vector3(i, j, 0);
+                        wall.transform.GetComponent<Renderer>().material.color = new Color(0, 0, 0);
+
+                        _gameField[i, j] = wall;
+                    }
+                    else
+                    {
+                        var square = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        square.transform.SetParent(gameObject.transform);
+                        square.transform.position = new Vector3(i, j, 1);
+                        _gameField[i, j] = square;
+                    }
                 }
             }
-        }
-
-        private void MovementRepeating()
-        {
-            Movement();
-            if (_size >= _maxSize)
-            {
-                Tail();
-            }
-            else
-            {
-                _size++;
-            }
-            RandomDirection();
-            print(dir);
         }
 
         private void Timer()
@@ -100,111 +119,37 @@ namespace Ai_Snakes.Scripts.GameControllerScript
             _isTraining = false;
         }
 
-        private void Movement()
+        private void Food()
         {
-            GameObject snakeHead;
-            _nextPos = _head.transform.position;
-
-            switch (dir)
-            {
-                case Direction.Up:
-                    _nextPos = new Vector2(_nextPos.x, _nextPos.y + 1);
-                    break;
-                case Direction.Down:
-                    _nextPos = new Vector2(_nextPos.x, _nextPos.y - 1);
-                    break;
-                case Direction.Left:
-                    _nextPos = new Vector2(_nextPos.x - 1, _nextPos.y);
-                    break;
-                default:
-                    _nextPos = new Vector2(_nextPos.x + 1, _nextPos.y);
-                    break;
-            }
-
-            snakeHead = Instantiate(_snakePrefab, _nextPos, transform.rotation);
-            _head.GetComponent<SnakeScript>().SetNextHead(snakeHead);
-            _head = snakeHead;
-            _qualityPointScore -= 0.1f;
-        }
-
-        private void Tail()
-        {
-            GameObject snakeTail = _tail;
-            _tail = _tail.GetComponent<SnakeScript>().GetNextHead();
-            Destroy(snakeTail);
-        }
-
-        private void RandomDirection()
-        {
-            if (dir == Direction.Up)
-            {
-                var temp = (Direction)Random.Range(0, 4);
-                while (temp == Direction.Down)
-                {
-                    temp = (Direction)Random.Range(0, 4);
-                }
-
-                dir = temp;
-                return;
-            }
-
-            if (dir == Direction.Right)
-            {
-                var temp = (Direction)Random.Range(0, 4);
-                while (temp == Direction.Left)
-                {
-                    temp = (Direction)Random.Range(0, 4);
-                }
-
-                dir = temp;
-                return;
-            }
-
-            if (dir == Direction.Down)
-            {
-                var temp = (Direction)Random.Range(0, 4);
-                while (temp == Direction.Up)
-                {
-                    temp = (Direction)Random.Range(0, 4);
-                }
-
-                dir = temp;
-                return;
-            }
-
-            if (dir == Direction.Left)
-            {
-                var temp = (Direction)Random.Range(0, 4);
-                while (temp == Direction.Right)
-                {
-                    temp = (Direction)Random.Range(0, 4);
-                }
-
-                dir = temp;
-            }
-        }
-
-        void Food()
-        {
-            int xPos = Random.Range(0, _fieldSize.x);
-            int yPos = Random.Range(0, _fieldSize.y);
+            int xPos = Random.Range(1, _fieldSize.x -1);
+            int yPos = Random.Range(1, _fieldSize.y -1);
 
             _currentFood = Instantiate(_foodPrefab, new Vector2(xPos, yPos), transform.rotation);
+            //FoodLocation = new Vector2Int(xPos, yPos);
             StartCoroutine(CheckRender(_currentFood));
         }
 
-        void Collision(string collidedObject)
+        //public void CheckForFood()
+        //{
+        //    if( Math.Abs(_head.transform.position.x - FoodLocation.x) < 0.1 && Math.Abs(_head.transform.position.y - FoodLocation.y) < 0.1)
+        //    {
+        //        Food();
+        //        _maxSize++;
+        //        _qualityPointScore += 1;
+        //    }
+                
+        //}
+
+        private void Collision(string collidedObject)
         {
-            if (collidedObject == "Food")
+            if(collidedObject == "Food")
             {
                 Food();
                 _maxSize++;
                 _qualityPointScore += 1;
             }
-
-            if (collidedObject == "Snake" || collidedObject == "Wall")
+            if(collidedObject == "Snake" || collidedObject == "Wall")
             {
-
                 _qualityPointScore = -1;
             }
         }
@@ -212,6 +157,8 @@ namespace Ai_Snakes.Scripts.GameControllerScript
         private void StartNextGeneration()
         {
             _currentGeneration++;
+            _maxSize = 3;
+            _size = 1;
             _qualityPointScore = 0;
 
             GameObject snakeHead;
@@ -225,8 +172,11 @@ namespace Ai_Snakes.Scripts.GameControllerScript
 
         private void WipeClean()
         {
-            Destroy(_head);
-            Destroy(_tail);
+            GameObject[] snakes = GameObject.FindGameObjectsWithTag("Snake");
+            for(int i = 0; i < snakes.Length; i++)
+            {
+                Destroy(snakes[i]);
+            }
             Destroy(_currentFood);
         }
 
@@ -253,6 +203,22 @@ namespace Ai_Snakes.Scripts.GameControllerScript
             }
         }
 
+        public Vector2Int FoodLocation { get; private set; }
+
+        public bool Training
+        {
+            get { return _isTraining; }
+        }
+
+        public static GameControllerScript GetScript()
+        {
+            return FindObjectOfType<GameControllerScript>();
+        }
+
+        public Vector2Int FieldSize
+        {
+            get { return _fieldSize; }
+        }
         //	void SnakeEyes() 
         //	{
         //

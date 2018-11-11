@@ -137,20 +137,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 597433728}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2b50368583dd26a468befe4abaedaee4, type: 3}
+  m_Script: {fileID: 11500000, guid: 1dfcebe0a1d925849a8dbec975cea77e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _fieldSize: {x: 12, y: 12}
   _maxSize: 3
   _size: 1
-  _snakePrefab: {fileID: 1699247955399426, guid: 91e1e4f7b45a0024b96134036cd3e02e,
+  _snakePrefab: {fileID: 1609373134579220, guid: 91e1e4f7b45a0024b96134036cd3e02e,
     type: 2}
-  _foodPrefab: {fileID: 1187295637131436, guid: cd533e581455ee74393a5f057b82f788,
+  _foodPrefab: {fileID: 1289950345887256, guid: cd533e581455ee74393a5f057b82f788,
     type: 2}
   _currentFood: {fileID: 0}
   _head: {fileID: 0}
   _tail: {fileID: 0}
+  _isTraining: 1
   _currentGeneration: 0
+  _qualityPointScore: 0
+  _movementPerSeconds: 0.6
 --- !u!4 &597433730
 Transform:
   m_ObjectHideFlags: 0
