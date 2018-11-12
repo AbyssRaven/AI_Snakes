@@ -54,13 +54,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\FindFoodScript.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
     <Compile Include="Assets\Scripts\GameControllerScript.cs" />
-    <Compile Include="Assets\Scripts\QMatrixScript.cs" />
+    <Compile Include="Assets\Scripts\QMatrix.cs" />
     <Compile Include="Assets\Scripts\Snake.cs" />
     <Compile Include="Assets\Scripts\SnakeScript.cs" />
-    <Compile Include="Assets\Scripts\SquareScript.cs" />
     <Compile Include="Assets\Scripts\Utility.cs" />
     <Compile Include="Assets\Scripts\Value.cs" />
     <Reference Include="UnityEditor.StandardEvents">

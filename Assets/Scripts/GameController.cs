@@ -12,7 +12,7 @@ namespace AI_Snakes.Main
 
         [SerializeField] private int _maxSize = 3;
         [SerializeField] private int _size = 1;
-        [SerializeField] public GameObject _snakePrefab;
+        [SerializeField] private GameObject _snakePrefab;
         [SerializeField] private GameObject _foodPrefab;
         [SerializeField] private GameObject _currentFood;
         [SerializeField] private GameObject _head;
@@ -75,7 +75,6 @@ namespace AI_Snakes.Main
                     {
                         var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
-                        wall.AddComponent<SquareScript>()._occupied = true;
                         wall.AddComponent<Rigidbody>().useGravity = false;
                         wall.transform.SetParent(gameObject.transform);
                         wall.GetComponent<Collider>().isTrigger = true;
@@ -91,7 +90,6 @@ namespace AI_Snakes.Main
                     {
                         var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
-                        wall.AddComponent<SquareScript>()._occupied = true;
                         wall.AddComponent<Rigidbody>().useGravity = false;
                         wall.transform.SetParent(gameObject.transform);
                         wall.GetComponent<Collider>().isTrigger = true;
@@ -129,6 +127,8 @@ namespace AI_Snakes.Main
                     Food();
                 }
             }
+            
+            print("Food coordinates:" + _currentFood.transform.position.x + "," + _currentFood.transform.position.y);
         }
 
         public void Movement()
@@ -200,6 +200,15 @@ namespace AI_Snakes.Main
             Food();
         }
 
+        private QMatrix RMatrixGeneration(Vector2Int food) 
+        {
+            QMatrix matrix = new QMatrix(food);
+            
+            matrix.QualityMatrix[]
+
+            return matrix;
+        }
+
         private void Collision(string collidedObject)
         {
             if (collidedObject == "Food")
@@ -232,5 +241,17 @@ namespace AI_Snakes.Main
                 StartNextGeneration();
             }
         }
+
+        public static GameController GetController() 
+        {
+            return FindObjectOfType<GameController>();
+        }
+
+        public Vector2Int FieldSize 
+        {
+            get {return _fieldSize;}
+        }
+        
+        public QMatrix RewardMatrix {get; private set;}
     }
 }

@@ -155,7 +155,7 @@ MonoBehaviour:
   _isTraining: 1
   _currentGeneration: 0
   _qualityPointScore: 0
-  _movementPerSeconds: 0.6
+  _movementPerSeconds: 0.23
 --- !u!4 &597433730
 Transform:
   m_ObjectHideFlags: 0

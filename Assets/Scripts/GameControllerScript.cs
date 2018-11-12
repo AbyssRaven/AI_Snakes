@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Ai_Snakes.Scripts.Food;
 //using Ai_Snakes.Scripts.Snake;
 using Random = UnityEngine.Random;
 
@@ -35,8 +34,6 @@ namespace Ai_Snakes.Scripts.GameController
         //	private int[] layers = new int[] { 1, 10, 10, 1 };
         //	private List<NNScript> networks;	
         //	private RaycastHit hit;
-
-        Direction dir = Direction.Right;
 
         //private void OnEnable()
         //{
@@ -76,7 +73,6 @@ namespace Ai_Snakes.Scripts.GameController
                     {
                         var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
-                        wall.AddComponent<SquareScript>()._occupied = true;
                         wall.AddComponent<Rigidbody>().useGravity = false;
                         wall.transform.SetParent(gameObject.transform);
                         wall.GetComponent<Collider>().isTrigger = true;
@@ -92,7 +88,6 @@ namespace Ai_Snakes.Scripts.GameController
                     {
                         var wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
-                        wall.AddComponent<SquareScript>()._occupied = true;
                         wall.AddComponent<Rigidbody>().useGravity = false;
                         wall.transform.SetParent(gameObject.transform);
                         wall.GetComponent<Collider>().isTrigger = true;

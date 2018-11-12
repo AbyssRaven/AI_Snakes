@@ -7,7 +7,7 @@ namespace AI_Snakes.SnakeAI
     public class Snake : MonoBehaviour
     {
         private GameObject _nextHead;
-        static public Action<String> hit;
+        public static Action<String> hit;
 
         public void SetNextHead(GameObject newHead)
         {
