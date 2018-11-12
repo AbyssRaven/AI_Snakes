@@ -140,7 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dfcebe0a1d925849a8dbec975cea77e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fieldSize: {x: 12, y: 12}
+  _fieldSize: {x: 8, y: 8}
   _maxSize: 3
   _size: 1
   _snakePrefab: {fileID: 1609373134579220, guid: 91e1e4f7b45a0024b96134036cd3e02e,
@@ -149,7 +149,9 @@ MonoBehaviour:
     type: 2}
   _currentFood: {fileID: 0}
   _head: {fileID: 0}
-  _tail: {fileID: 0}
+  _lastTail: {fileID: 0}
+  _tail:
+  - {fileID: 0}
   _isTraining: 1
   _currentGeneration: 0
   _qualityPointScore: 0

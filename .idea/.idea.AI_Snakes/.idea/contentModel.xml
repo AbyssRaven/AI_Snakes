@@ -15,10 +15,15 @@
           </e>
         </e>
         <e p="Scripts" t="Include">
-          <e p="FieldScript.cs" t="Include" />
+          <e p="FindFoodScript.cs" t="Include" />
+          <e p="GameController.cs" t="Include" />
           <e p="GameControllerScript.cs" t="Include" />
-          <e p="QLearningScript.cs" t="Include" />
+          <e p="QMatrixScript.cs" t="Include" />
+          <e p="Snake.cs" t="Include" />
           <e p="SnakeScript.cs" t="Include" />
+          <e p="SquareScript.cs" t="Include" />
+          <e p="Utility.cs" t="Include" />
+          <e p="Value.cs" t="Include" />
         </e>
       </e>
       <e p="Library" t="ExcludeRecursive" />
