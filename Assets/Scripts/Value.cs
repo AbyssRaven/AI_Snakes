@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
+using Random = UnityEngine.Random;
 
 namespace AI_Snakes.Utility
 {
@@ -33,17 +35,43 @@ namespace AI_Snakes.Utility
         
         public double GetValue(Direction dir) 
         {
-//            switch (dir) 
-//            {
-//                case Direction.Up:
-//                    return _up;
-//                case Direction.Down:
-//                    return _down;
-//                case Direction.Right:
-//                    return _right;
-//                case Direction.Left:
-//                    return _left;
-//            }
+            switch (dir) 
+            {
+                case Direction.Up:
+                    return _up;
+                case Direction.Down:
+                    return _down;
+                case Direction.Right:
+                    return _right;
+                case Direction.Left:
+                    return _left;
+                default:
+                    return 0;
+            }
+        }
+        
+        public Direction ChooseDirectionWithHighestValue() 
+        {
+            if (_up > _down && _up > _right && _up > _left)
+                return Direction.Up;
+            if (_right > _up && _right > _down && _right > _left)
+                return Direction.Right;
+            if (_down > _up && _down > _right && _down > _left)
+                return Direction.Down;
+            if (_left > _up && _left > _down && _left > _right)
+                return Direction.Left;
+            return (Direction)Random.Range(0, Enum.GetValues(typeof(Direction)).Length);
+        }
+
+        public double GetSumOfValue() 
+        {
+            return _up + _right + _down + _left;
+        }
+
+        public double GetMaxOfAllValue() 
+        {
+            List<double> value = new List<double> {_up, _right, _down, _left};
+            return value.Max();
         }
     }
 }

@@ -111,7 +111,7 @@ namespace AI_Snakes.Main
             }
         }
 
-        private void Food()
+        private void FoodGeneration()
         {          
             int xPos = Random.Range(1, _fieldSize.x - 1);
             int yPos = Random.Range(1, _fieldSize.y - 1);
@@ -124,9 +124,12 @@ namespace AI_Snakes.Main
                     && _tail[i].transform.position.y == _currentFood.transform.position.y)
                 {
                     Destroy(_currentFood);
-                    Food();
+                    FoodGeneration();
+                    return;
                 }
             }
+
+            RewardMatrix = SetRewardMatrixForFood(Food);
             
             print("Food coordinates:" + _currentFood.transform.position.x + "," + _currentFood.transform.position.y);
         }
@@ -197,14 +200,17 @@ namespace AI_Snakes.Main
             _head = snakeHead;
             _lastTail = snakeHead;
 
-            Food();
+            FoodGeneration();
         }
 
-        private QMatrix RMatrixGeneration(Vector2Int food) 
+        private QMatrix SetRewardMatrixForFood(Vector2Int food) 
         {
             QMatrix matrix = new QMatrix(food);
             
-            matrix.QualityMatrix[]
+            matrix.QualityMatrix[food.x, food.y - 1].SetValue(Direction.Up, 1);
+            matrix.QualityMatrix[food.x -1, food.y].SetValue(Direction.Right, 1);
+            matrix.QualityMatrix[food.x, food.y + 1].SetValue(Direction.Down, 1);
+            matrix.QualityMatrix[food.x + 1, food.y].SetValue(Direction.Left, 1);
 
             return matrix;
         }
@@ -213,7 +219,7 @@ namespace AI_Snakes.Main
         {
             if (collidedObject == "Food")
             {
-                Food();
+                FoodGeneration();
                 _maxSize++;
                 _qualityPointScore += 1;
             }
@@ -251,6 +257,8 @@ namespace AI_Snakes.Main
         {
             get {return _fieldSize;}
         }
+        
+        public Vector2Int Food {get; private set;}
         
         public QMatrix RewardMatrix {get; private set;}
     }
