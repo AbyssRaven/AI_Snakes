@@ -2,12 +2,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using Random = UnityEngine.Random;
 
 namespace AI_Snakes.Utility
 {
     public class Value
     {
+        private List<QMatrix> _collectedData;
+        private List<QMatrix> _data = new List<QMatrix>();
+        
         private double _up = 0;
         private double _right = 0;
         private double _down = 0;
@@ -48,6 +52,27 @@ namespace AI_Snakes.Utility
                 default:
                     return 0;
             }
+        }
+        
+        public QMatrix FindQMatrixForFood(Vector2Int food) 
+        {
+            foreach(var matrix in _data) 
+            {
+                if(matrix.GetCoordinateEquals(food.x, food.y))
+                {
+                    return matrix;
+                }
+            }
+            return new QMatrix(food);
+        }
+ 
+        public void DataCollection(QMatrix qMatrix) 
+        {
+            if(_collectedData == null) 
+            {
+                _collectedData = new List<QMatrix>();
+            }
+            _collectedData.Add(qMatrix);
         }
         
         public Direction ChooseDirectionWithHighestValue() 

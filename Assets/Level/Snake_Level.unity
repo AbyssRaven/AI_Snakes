@@ -148,14 +148,13 @@ MonoBehaviour:
   _foodPrefab: {fileID: 1289950345887256, guid: cd533e581455ee74393a5f057b82f788,
     type: 2}
   _currentFood: {fileID: 0}
-  _head: {fileID: 0}
-  _lastTail: {fileID: 0}
-  _tail:
-  - {fileID: 0}
-  _isTraining: 1
+  Head: {fileID: 0}
+  _tail: {fileID: 0}
+  IsTraining: 1
   _currentGeneration: 0
   _qualityPointScore: 0
-  _movementPerSeconds: 0.23
+  _movementPerSeconds: 1
+  _howManyFruitsGotten: 0
 --- !u!4 &597433730
 Transform:
   m_ObjectHideFlags: 0

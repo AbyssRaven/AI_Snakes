@@ -1,11 +1,12 @@
-﻿using AI_Snakes.Main;
+﻿using System.Collections.Generic;
+using AI_Snakes.Snake;
 using UnityEngine;
 
 namespace AI_Snakes.Utility 
 {
     public class QMatrix 
     {
-        public Value[,] QualityMatrix {get; private set;}
+        public Value[,] QualityMatrix {get; private set;}       
 
         public int X;
         public int Y;
@@ -26,6 +27,10 @@ namespace AI_Snakes.Utility
             }
         }
         
+        public bool GetCoordinateEquals(int x, int y) 
+        {
+            return X == x && Y == y;
+        }
     }
 
 }
