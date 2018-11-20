@@ -43,7 +43,6 @@ namespace Ai_Snakes.Scripts.GameController
         void Start()
         {           
             CreateGameField();
-
             StartNextGeneration();
             
         }

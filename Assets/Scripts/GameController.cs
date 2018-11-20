@@ -9,7 +9,7 @@ namespace AI_Snakes.Snake
 {
     public class GameController : MonoBehaviour
     {
-        [SerializeField] Vector2Int _fieldSize = new Vector2Int(12, 12);
+        [SerializeField] public Vector2Int _fieldSize = new Vector2Int(12, 12);
 
         [SerializeField] private int _maxSize = 3;
         [SerializeField] private int _size = 1;
@@ -33,7 +33,8 @@ namespace AI_Snakes.Snake
         private Vector2 _blockedPos;
         private Snake _snake;
 
-        Direction dir = Direction.Right;
+        Direction dir = Direction.None;
+        Direction previousDir;
 
         private void OnEnable()
         {
@@ -46,6 +47,7 @@ namespace AI_Snakes.Snake
             _howManyFruitsGotten = 0;
             
             CreateGameField();
+            AIBrain = new AIBrain();
             
             _movementCounter = _movementPerSeconds;
             StartNextGeneration();
@@ -170,37 +172,13 @@ namespace AI_Snakes.Snake
             Head.GetComponent<Snake>().SetNextHead(snakeHead);
             Head = snakeHead;
 
-            _qualityPointScore -= 0.1f;
-        }
-
-        public bool IsOppositeDirection(Direction chosenDir) 
-        {
-            var previousDir = dir;
-            if(previousDir == Direction.Up && chosenDir == Direction.Down) 
-            {
-                return true;
-            }
-            if(previousDir == Direction.Right && chosenDir == Direction.Left) 
-            {
-                return true;
-            }
-            if(previousDir == Direction.Down && chosenDir == Direction.Up) 
-            {
-                return true;
-            }
-            if(previousDir == Direction.Left && chosenDir == Direction.Right) 
-            {
-                return true;
-            }
-            else 
-            {
-                return false;
-            }
+            //_qualityPointScore -= 0.1f;
         }
         
         private void MovementRepeating() 
         {
             dir = _snake.ChooseDirection();
+            previousDir = dir;
             Movement();
             if (_size >= _maxSize)
             {
@@ -280,8 +258,12 @@ namespace AI_Snakes.Snake
             {
                 return true;
             }
+            if (IsOppositeDirection(dir))
+            {
+                return true;
+            }
 
-            switch(dir) 
+            switch (dir) 
             {
                 case Direction.Up:
                     return _blockedPos.y + 1 > _fieldSize.y - 1;
@@ -293,6 +275,30 @@ namespace AI_Snakes.Snake
                     return _blockedPos.x - 1 < 0;
                 default:
                     return false;
+            }
+        }
+
+        private bool IsOppositeDirection(Direction dir)
+        {
+            if (previousDir == Direction.Up && dir == Direction.Down)
+            {
+                return true;
+            }
+            if (previousDir == Direction.Right && dir == Direction.Left)
+            {
+                return true;
+            }
+            if (previousDir == Direction.Down && dir == Direction.Up)
+            {
+                return true;
+            }
+            if (previousDir == Direction.Left && dir == Direction.Right)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
 
@@ -311,12 +317,12 @@ namespace AI_Snakes.Snake
             }
         }
 
-        private void WipeClean()
+        public void WipeClean()
         {
             GameObject[] snakes = GameObject.FindGameObjectsWithTag("Snake");
+            _snake.CollectCurrentMatrixData();
             for (int i = 0; i < snakes.Length; i++)
             {
-                
                 Destroy(snakes[i]);
             }
             Destroy(_currentFood);
@@ -345,6 +351,6 @@ namespace AI_Snakes.Snake
         
         public QMatrix RewardMatrix {get; private set;}
         
-        public Value Value {get; private set;}
+        public AIBrain AIBrain { get; private set; }
     }
 }

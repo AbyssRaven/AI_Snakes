@@ -23,6 +23,7 @@ namespace AI_Snakes.Utility
         Right,
         Down,
         Left,
+        None,
     }
 }
 

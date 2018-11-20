@@ -6,10 +6,11 @@ namespace AI_Snakes.Utility
 {
     public class QMatrix 
     {
-        public Value[,] QualityMatrix {get; private set;}       
+        public Value[,] QualityMatrix {get; set;}       
 
-        public int X;
-        public int Y;
+        public int X { get; private set; }
+        public int Y { get; private set; }
+        private int _generationAmount;
 
         public QMatrix(Vector2Int food) 
         {
@@ -30,6 +31,12 @@ namespace AI_Snakes.Utility
         public bool GetCoordinateEquals(int x, int y) 
         {
             return X == x && Y == y;
+        }
+
+        public int Generations
+        {
+            get { return _generationAmount; }
+            set { _generationAmount = value; }
         }
     }
 

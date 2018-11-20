@@ -8,15 +8,11 @@ using Random = UnityEngine.Random;
 namespace AI_Snakes.Utility
 {
     public class Value
-    {
-        private List<QMatrix> _collectedData;
-        private List<QMatrix> _data = new List<QMatrix>();
-        
+    {       
         private double _up = 0;
         private double _right = 0;
         private double _down = 0;
         private double _left = 0;
-
 
         public void SetValue(Direction dir, double value)
         {
@@ -54,27 +50,6 @@ namespace AI_Snakes.Utility
             }
         }
         
-        public QMatrix FindQMatrixForFood(Vector2Int food) 
-        {
-            foreach(var matrix in _data) 
-            {
-                if(matrix.GetCoordinateEquals(food.x, food.y))
-                {
-                    return matrix;
-                }
-            }
-            return new QMatrix(food);
-        }
- 
-        public void DataCollection(QMatrix qMatrix) 
-        {
-            if(_collectedData == null) 
-            {
-                _collectedData = new List<QMatrix>();
-            }
-            _collectedData.Add(qMatrix);
-        }
-        
         public Direction ChooseDirectionWithHighestValue() 
         {
             if (_up > _down && _up > _right && _up > _left)
@@ -93,7 +68,7 @@ namespace AI_Snakes.Utility
             return _up + _right + _down + _left;
         }
 
-        public double GetMaxOfAllValue() 
+        public double GetBestValue() 
         {
             List<double> value = new List<double> {_up, _right, _down, _left};
             return value.Max();
