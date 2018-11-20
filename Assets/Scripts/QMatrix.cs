@@ -15,7 +15,6 @@ namespace AI_Snakes.Utility
         public QMatrix(Vector2Int food) 
         {
             QualityMatrix = new Value[GameController.GetController().FieldSize.x,GameController.GetController().FieldSize.y];
-
             X = food.x;
             Y = food.y;
             

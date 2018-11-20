@@ -11,11 +11,10 @@ namespace AI_Snakes.Snake
         private GameObject _nextHead;
         public static Action<String> hit;
 
-        private float _alpha = 0.1f;
-        private float _gamme = 0.95f;
+        private float _learningRateAlpha = 0.1f;
+        private float _discountRateGamma = 0.95f;
         
         private AIBrain _brain;
-        private Vector2 _nextPos;
         private GameController _gameController;
         public QMatrix CurrentMatrix {get; private set;}
         public List<bool>[,] _blockedSnakeField;
@@ -38,7 +37,9 @@ namespace AI_Snakes.Snake
 
         public Direction ChooseDirection() 
         {
-            if(_gameController.IsWayBlocked(Direction.Up) && _gameController.IsWayBlocked(Direction.Right)
+            var snakeHead = _gameController.Head.transform.position;
+
+            if (_gameController.IsWayBlocked(Direction.Up) && _gameController.IsWayBlocked(Direction.Right)
               && _gameController.IsWayBlocked(Direction.Down) && _gameController.IsWayBlocked(Direction.Left)) 
             {
                 _gameController.WipeClean();
@@ -51,18 +52,29 @@ namespace AI_Snakes.Snake
                     dir = (Direction)Random.Range(0, 4);
                 }
             }
+            else
+            {
+                dir = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].ChooseDirectionWithHighestValue();
 
-            //_nextPos = _gameController.Head.transform.position;
-            //dir = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(_nextPos.x), Mathf.RoundToInt(_nextPos.y)].ChooseDirectionWithHighestValue();
+                while (_gameController.IsWayBlocked(dir))
+                {
+                    dir = (Direction)Random.Range(0, 4);
+                }
+            }
+
             return dir;
         }
 
-        private void CalculateQValueOfNextAction(Direction dir)
+        public void CalculateQValueOfNextAction(Direction dir)
         {
+            var snakeHead = _gameController.Head.transform.position;
 
+            var actionValue = (1 - _learningRateAlpha) * CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetValue(dir) + _learningRateAlpha * GetValueOfActionWithReward(dir);
+
+            CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetValue(dir, actionValue);
         }
 
-        private double GetBestQValueForAction(Direction dir)
+        private double GetQValueForEachAction(Direction dir)
         {
             var snakeHead = _gameController.Head.transform.position;
             Value qValue;
@@ -92,6 +104,13 @@ namespace AI_Snakes.Snake
             return qValue.GetBestValue();
         }
 
+        private double GetValueOfActionWithReward(Direction dir)
+        {
+            var snakeHead = _gameController.Head.transform.position;
+
+            return _gameController.RewardMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetValue(dir) + _discountRateGamma * GetQValueForEachAction(dir);
+        }
+
         public void SetNextHead(GameObject newHead)
         {
             _nextHead = newHead;
@@ -101,11 +120,6 @@ namespace AI_Snakes.Snake
         public GameObject GetNextHead()
         {
             return _nextHead;
-        }
-
-        public void ClearSnakeFieldToBlock()
-        {
-            _snakeField = null;
         }
 
         private void OnTriggerEnter(Collider other)

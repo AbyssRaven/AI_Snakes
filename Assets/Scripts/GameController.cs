@@ -125,11 +125,14 @@ namespace AI_Snakes.Snake
         }
 
         private void FoodGeneration()
-        {          
+        {
             int xPos = Random.Range(1, _fieldSize.x - 1);
             int yPos = Random.Range(1, _fieldSize.y - 1);
 
             _currentFood = Instantiate(_foodPrefab, new Vector2(xPos, yPos), transform.rotation);
+
+            var foodLocation = _currentFood.transform.position;
+            Food = new Vector2Int(Mathf.RoundToInt(foodLocation.x), Mathf.RoundToInt(foodLocation.y));
 
 //            for (int i = 0; i < _tail.Count; i++)
 //            {
@@ -179,6 +182,7 @@ namespace AI_Snakes.Snake
         {
             dir = _snake.ChooseDirection();
             previousDir = dir;
+            _snake.CalculateQValueOfNextAction(dir);
             Movement();
             if (_size >= _maxSize)
             {
@@ -201,7 +205,7 @@ namespace AI_Snakes.Snake
         private void StartNextGeneration()
         {
             _currentGeneration++;
-            _maxSize = 3;
+            _maxSize = 1;
             _size = 1;
             _qualityPointScore = 0;
 
@@ -217,11 +221,11 @@ namespace AI_Snakes.Snake
         private QMatrix SetRewardMatrixForFood(Vector2Int food) 
         {
             QMatrix matrix = new QMatrix(food);
-            
-//            matrix.QualityMatrix[food.x, food.y - 1].SetValue(Direction.Up, 1);
-//            matrix.QualityMatrix[food.x -1, food.y].SetValue(Direction.Right, 1);
-//            matrix.QualityMatrix[food.x, food.y + 1].SetValue(Direction.Down, 1);
-//            matrix.QualityMatrix[food.x + 1, food.y].SetValue(Direction.Left, 1);
+
+            matrix.QualityMatrix[food.x, food.y - 1].SetValue(Direction.Up, 1);
+            matrix.QualityMatrix[food.x - 1, food.y].SetValue(Direction.Right, 1);
+            matrix.QualityMatrix[food.x, food.y + 1].SetValue(Direction.Down, 1);
+            matrix.QualityMatrix[food.x + 1, food.y].SetValue(Direction.Left, 1);
 
             return matrix;
         }
@@ -232,7 +236,6 @@ namespace AI_Snakes.Snake
             {
                 return true;
             }
-
             return _blockedField[Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y)];
         }
 
