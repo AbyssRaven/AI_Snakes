@@ -7,9 +7,9 @@ namespace AI_Snakes.Snake
 {
     public class AIBrain
     {
-        private List<QMatrix> _collectedData;
+        private QMatrix _collectedMatrix;
         private List<QMatrix> _data = new List<QMatrix>();
-        private QMatrix _qMatrix;
+        private QMatrix _qMatri;
 
         public QMatrix FindQMatrixForFood(Vector2Int food)
         {
@@ -25,32 +25,31 @@ namespace AI_Snakes.Snake
 
         public void DataCollection(QMatrix qMatrix)
         {
-            if (_collectedData == null)
+            if (_collectedMatrix == null)
             {
-                _collectedData = new List<QMatrix>();
+                _collectedMatrix = qMatrix;
             }
-            _collectedData.Add(qMatrix);
         }
 
-        private void SaveQMatrix()
+        public void SaveQMatrix()
         {
-            if(_collectedData == null)
+            if(_collectedMatrix == null)
             {
                 return;
             }
 
-            var food = new Vector2Int(_collectedData[0].X, _collectedData[0].Y);
+            var food = new Vector2Int(_collectedMatrix.X, _collectedMatrix.Y);
             var data = new QMatrix(food);
-            data.Generations = _collectedData[0].Generations++;
+            data.Generations = _collectedMatrix.Generations++;
 
-            for(var i = 0; i < _collectedData[0].QualityMatrix.GetLength(0); i++)
+            for(var i = 0; i < _collectedMatrix.QualityMatrix.GetLength(0); i++)
             {
-                for(var j = 0;j < _collectedData[1].QualityMatrix.GetLength(1); j++)
+                for(var j = 0; j < _collectedMatrix.QualityMatrix.GetLength(1); j++)
                 {
-                    double up = _qMatrix.QualityMatrix[i, j].GetValue(Direction.Up);
-                    double right = _qMatrix.QualityMatrix[i, j].GetValue(Direction.Right); 
-                    double down = _qMatrix.QualityMatrix[i, j].GetValue(Direction.Down);
-                    double left = _qMatrix.QualityMatrix[i, j].GetValue(Direction.Left);
+                    double up = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Up);
+                    double right = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Right); 
+                    double down = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Down);
+                    double left = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Left);
 
                     data.QualityMatrix[i, j].SetValue(Direction.Up, up);
                     data.QualityMatrix[i, j].SetValue(Direction.Right, right);
@@ -68,7 +67,7 @@ namespace AI_Snakes.Snake
                     return;
                 }
             }
-            _collectedData.Clear();
+            _collectedMatrix = null;
             _data.Add(data);
         }
     }

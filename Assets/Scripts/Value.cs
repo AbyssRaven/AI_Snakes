@@ -9,10 +9,10 @@ namespace AI_Snakes.Utility
 {
     public class Value
     {       
-        private double _up = 0;
-        private double _right = 0;
-        private double _down = 0;
-        private double _left = 0;
+        private double _up;
+        private double _right;
+        private double _down;
+        private double _left;
 
         public void SetValue(Direction dir, double value)
         {
@@ -39,10 +39,10 @@ namespace AI_Snakes.Utility
             {
                 case Direction.Up:
                     return _up;
-                case Direction.Down:
-                    return _down;
                 case Direction.Right:
                     return _right;
+                case Direction.Down:
+                    return _down;
                 case Direction.Left:
                     return _left;
                 default:
@@ -61,11 +61,6 @@ namespace AI_Snakes.Utility
             if (_left > _up && _left > _down && _left > _right)
                 return Direction.Left;
             return (Direction)Random.Range(0, Enum.GetValues(typeof(Direction)).Length);
-        }
-
-        public double GetSumOfValue() 
-        {
-            return _up + _right + _down + _left;
         }
 
         public double GetBestValue() 

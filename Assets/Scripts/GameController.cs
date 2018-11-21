@@ -32,6 +32,7 @@ namespace AI_Snakes.Snake
         private Vector2 _nextPos;
         private Vector2 _blockedPos;
         private Snake _snake;
+        private bool _generationActive;
 
         Direction dir = Direction.None;
         Direction previousDir;
@@ -65,10 +66,12 @@ namespace AI_Snakes.Snake
             GameReset();
 
             _movementCounter -= Time.deltaTime;
-            if(_movementCounter < 0)
+            if(_generationActive) 
             {
-                MovementRepeating();
-                _movementCounter = _movementPerSeconds;
+                if(_movementCounter < 0) {
+                    MovementRepeating();
+                    _movementCounter = _movementPerSeconds;
+                }
             }
         }
 
@@ -202,7 +205,7 @@ namespace AI_Snakes.Snake
             Destroy(snakeTail);
         }
 
-        private void StartNextGeneration()
+        private void StartNextGeneration() 
         {
             _currentGeneration++;
             _maxSize = 1;
@@ -210,11 +213,12 @@ namespace AI_Snakes.Snake
             _qualityPointScore = 0;
 
             GameObject snakeHead;
-
+            AIBrain.SaveQMatrix();
             snakeHead = Instantiate(_snakePrefab, new Vector2(_fieldSize.x / 2, _fieldSize.y / 2), transform.rotation);
             Head = snakeHead;
             _tail = snakeHead;
-
+            
+            _generationActive = true;
             FoodGeneration();
         }
 
@@ -322,6 +326,7 @@ namespace AI_Snakes.Snake
 
         public void WipeClean()
         {
+            _generationActive = false;
             GameObject[] snakes = GameObject.FindGameObjectsWithTag("Snake");
             _snake.CollectCurrentMatrixData();
             for (int i = 0; i < snakes.Length; i++)
