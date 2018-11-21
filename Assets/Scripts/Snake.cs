@@ -69,7 +69,7 @@ namespace AI_Snakes.Snake
         {
             var snakeHead = _gameController.Head.transform.position;
 
-            var actionValue = (1 - _learningRateAlpha) * CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetValue(dir) + _learningRateAlpha * GetValueOfActionWithReward(dir);
+            var actionValue = /*(1 - _learningRateAlpha) **/ CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetValue(dir) + _learningRateAlpha * GetValueOfActionWithReward(dir);
 
             CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetValue(dir, actionValue);
         }
