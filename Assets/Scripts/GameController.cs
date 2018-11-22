@@ -1,9 +1,12 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using AI_Snakes.Snake;
 using AI_Snakes.Utility;
 using UnityEngine;
+using UnityEngine.UI;
 using UnityEngine.XR.WSA.Persistence;
+using Random = UnityEngine.Random;
 
 namespace AI_Snakes.Snake
 {
@@ -23,7 +26,6 @@ namespace AI_Snakes.Snake
         [SerializeField] private int _currentGeneration = 0;
         [SerializeField] private float _qualityPointScore;
         [SerializeField] [Range(0, 1)] private float _movementPerSeconds;
-
         [SerializeField] private int _howManyFruitsGotten;
 
         private GameObject[,] _gameField;
@@ -51,6 +53,7 @@ namespace AI_Snakes.Snake
             AIBrain = new AIBrain();
             
             _movementCounter = _movementPerSeconds;
+            FoodGeneration();
             StartNextGeneration();
             _snake = Snake.GetSnake();
         }
@@ -61,18 +64,20 @@ namespace AI_Snakes.Snake
         }
 
         // Update is called once per frame
-        void Update()
+        void Update() 
         {
             GameReset();
 
             _movementCounter -= Time.deltaTime;
             if(_generationActive) 
             {
-                if(_movementCounter < 0) {
+                if(_movementCounter < 0) 
+                {
                     MovementRepeating();
                     _movementCounter = _movementPerSeconds;
                 }
             }
+            
         }
 
         private void CreateGameField()
@@ -132,23 +137,12 @@ namespace AI_Snakes.Snake
             int xPos = Random.Range(1, _fieldSize.x - 1);
             int yPos = Random.Range(1, _fieldSize.y - 1);
 
-            _currentFood = Instantiate(_foodPrefab, new Vector2(xPos, yPos), transform.rotation);
+            _currentFood = Instantiate(_foodPrefab, new Vector2(1, 1), transform.rotation);
 
             var foodLocation = _currentFood.transform.position;
-            Food = new Vector2Int(Mathf.RoundToInt(foodLocation.x), Mathf.RoundToInt(foodLocation.y));
+            Food = new Vector2Int(Mathf.RoundToInt(foodLocation.x), Mathf.RoundToInt(foodLocation.y));      
 
-//            for (int i = 0; i < _tail.Count; i++)
-//            {
-//                if (_tail[i].transform.position.x == _currentFood.transform.position.x
-//                    && _tail[i].transform.position.y == _currentFood.transform.position.y)
-//                {
-//                    Destroy(_currentFood);
-//                    FoodGeneration();
-//                    return;
-//                }
-//            }
-
-            RewardMatrix = SetRewardMatrixForFood(Food);
+//            RewardMatrix = SetRewardMatrixForFood(Food);
             
             print("Food coordinates:" + _currentFood.transform.position.x + "," + _currentFood.transform.position.y);
         }
@@ -185,7 +179,7 @@ namespace AI_Snakes.Snake
         {
             dir = _snake.ChooseDirection();
             previousDir = dir;
-            _snake.CalculateQValueOfNextAction(dir);
+//            _snake.CalculateQValueOfNextAction(dir);
             Movement();
             if (_size >= _maxSize)
             {
@@ -195,6 +189,9 @@ namespace AI_Snakes.Snake
             {
                 _size++;
             }
+//            _snake.SetBackwardsQValue(previousDir);
+//            _snake.CollectCurrentMatrixData();
+//            AIBrain.SaveQMatrix();
             print(dir);
         }
 
@@ -213,26 +210,25 @@ namespace AI_Snakes.Snake
             _qualityPointScore = 0;
 
             GameObject snakeHead;
-            AIBrain.SaveQMatrix();
+//            AIBrain.SaveQMatrix();
             snakeHead = Instantiate(_snakePrefab, new Vector2(_fieldSize.x / 2, _fieldSize.y / 2), transform.rotation);
             Head = snakeHead;
             _tail = snakeHead;
             
             _generationActive = true;
-            FoodGeneration();
         }
 
-        private QMatrix SetRewardMatrixForFood(Vector2Int food) 
-        {
-            QMatrix matrix = new QMatrix(food);
-
-            matrix.QualityMatrix[food.x, food.y - 1].SetValue(Direction.Up, 1);
-            matrix.QualityMatrix[food.x - 1, food.y].SetValue(Direction.Right, 1);
-            matrix.QualityMatrix[food.x, food.y + 1].SetValue(Direction.Down, 1);
-            matrix.QualityMatrix[food.x + 1, food.y].SetValue(Direction.Left, 1);
-
-            return matrix;
-        }
+//        private QMatrix SetRewardMatrixForFood(Vector2Int food) 
+//        {
+//            QMatrix matrix = new QMatrix(food);
+//
+//            matrix.QualityMatrix[food.x, food.y - 1].SetValue(Direction.Up, 1);
+//            matrix.QualityMatrix[food.x - 1, food.y].SetValue(Direction.Right, 1);
+//            matrix.QualityMatrix[food.x, food.y + 1].SetValue(Direction.Down, 1);
+//            matrix.QualityMatrix[food.x + 1, food.y].SetValue(Direction.Left, 1);
+//
+//            return matrix;
+//        }
 
         private bool IsBlocked(Vector2 pos) 
         {
@@ -265,10 +261,10 @@ namespace AI_Snakes.Snake
             {
                 return true;
             }
-            if (IsOppositeDirection(dir))
-            {
-                return true;
-            }
+//            if (IsOppositeDirection(dir))
+//            {
+//                return true;
+//            }
 
             switch (dir) 
             {
@@ -314,7 +310,7 @@ namespace AI_Snakes.Snake
             if (collidedObject == "Food") 
             {
                 _howManyFruitsGotten++;
-                _maxSize++;
+//                _maxSize++;
                 _qualityPointScore += 1;
                 FoodGeneration();
             }
@@ -328,7 +324,7 @@ namespace AI_Snakes.Snake
         {
             _generationActive = false;
             GameObject[] snakes = GameObject.FindGameObjectsWithTag("Snake");
-            _snake.CollectCurrentMatrixData();
+//            _snake.CollectCurrentMatrixData();
             for (int i = 0; i < snakes.Length; i++)
             {
                 Destroy(snakes[i]);
