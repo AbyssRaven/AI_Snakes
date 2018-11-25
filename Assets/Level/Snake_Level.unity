@@ -140,21 +140,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dfcebe0a1d925849a8dbec975cea77e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fieldSize: {x: 4, y: 4}
+  _fieldSize: {x: 5, y: 5}
   _maxSize: 1
   _size: 1
   _snakePrefab: {fileID: 1609373134579220, guid: 91e1e4f7b45a0024b96134036cd3e02e,
     type: 2}
   _foodPrefab: {fileID: 1289950345887256, guid: cd533e581455ee74393a5f057b82f788,
     type: 2}
-  _currentFood: {fileID: 0}
+  CurrentFood: {fileID: 0}
   Head: {fileID: 0}
   _tail: {fileID: 0}
   IsTraining: 1
   _currentGeneration: 0
-  _qualityPointScore: 0
   _movementPerSeconds: 1
   _howManyFruitsGotten: 0
+  _wipeNowPlease: 0
 --- !u!4 &597433730
 Transform:
   m_ObjectHideFlags: 0

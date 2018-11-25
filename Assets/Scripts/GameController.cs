@@ -18,13 +18,13 @@ namespace AI_Snakes.Snake
         [SerializeField] private int _size = 1;
         [SerializeField] private GameObject _snakePrefab;
         [SerializeField] private GameObject _foodPrefab;
-        [SerializeField] private GameObject _currentFood;
+        [SerializeField] public GameObject CurrentFood;
         [SerializeField] public GameObject Head;
         [SerializeField] private GameObject _tail;
 
         [SerializeField] public bool IsTraining = true;
         [SerializeField] private int _currentGeneration = 0;
-        [SerializeField] private float _qualityPointScore;
+        //[SerializeField] private float _qualityPointScore;
         [SerializeField] [Range(0, 1)] private float _movementPerSeconds;
         [SerializeField] private int _howManyFruitsGotten;
 
@@ -35,6 +35,8 @@ namespace AI_Snakes.Snake
         private Vector2 _blockedPos;
         private Snake _snake;
         private bool _generationActive;
+
+        [SerializeField] private bool _wipeNowPlease = false;
 
         Direction dir = Direction.None;
         Direction previousDir;
@@ -66,7 +68,7 @@ namespace AI_Snakes.Snake
         // Update is called once per frame
         void Update() 
         {
-            GameReset();
+            WipeNowPlease();
 
             _movementCounter -= Time.deltaTime;
             if(_generationActive) 
@@ -137,14 +139,14 @@ namespace AI_Snakes.Snake
             int xPos = Random.Range(1, _fieldSize.x - 1);
             int yPos = Random.Range(1, _fieldSize.y - 1);
 
-            _currentFood = Instantiate(_foodPrefab, new Vector2(1, 1), transform.rotation);
+            CurrentFood = Instantiate(_foodPrefab, new Vector2(1, 1), transform.rotation);
 
-            var foodLocation = _currentFood.transform.position;
+            var foodLocation = CurrentFood.transform.position;
             Food = new Vector2Int(Mathf.RoundToInt(foodLocation.x), Mathf.RoundToInt(foodLocation.y));      
 
 //            RewardMatrix = SetRewardMatrixForFood(Food);
             
-            print("Food coordinates:" + _currentFood.transform.position.x + "," + _currentFood.transform.position.y);
+            print("Food coordinates:" + CurrentFood.transform.position.x + "," + CurrentFood.transform.position.y);
         }
 
         public void Movement()
@@ -179,7 +181,12 @@ namespace AI_Snakes.Snake
         {
             dir = _snake.ChooseDirection();
             previousDir = dir;
-//            _snake.CalculateQValueOfNextAction(dir);
+            _snake.CalculateQValueOfNextAction(dir);
+            _snake.SetBackwardsQValue(previousDir);
+            _snake.SetRewardForAction(dir);
+            //_snake.CollectCurrentMatrixData();
+            //            AIBrain.SaveQMatrix();
+
             Movement();
             if (_size >= _maxSize)
             {
@@ -189,9 +196,6 @@ namespace AI_Snakes.Snake
             {
                 _size++;
             }
-//            _snake.SetBackwardsQValue(previousDir);
-//            _snake.CollectCurrentMatrixData();
-//            AIBrain.SaveQMatrix();
             print(dir);
         }
 
@@ -207,14 +211,13 @@ namespace AI_Snakes.Snake
             _currentGeneration++;
             _maxSize = 1;
             _size = 1;
-            _qualityPointScore = 0;
 
             GameObject snakeHead;
 //            AIBrain.SaveQMatrix();
             snakeHead = Instantiate(_snakePrefab, new Vector2(_fieldSize.x / 2, _fieldSize.y / 2), transform.rotation);
             Head = snakeHead;
             _tail = snakeHead;
-            
+
             _generationActive = true;
         }
 
@@ -261,10 +264,10 @@ namespace AI_Snakes.Snake
             {
                 return true;
             }
-//            if (IsOppositeDirection(dir))
-//            {
-//                return true;
-//            }
+            //            if (IsOppositeDirection(dir))
+            //            {
+            //                return true;
+            //            }
 
             switch (dir) 
             {
@@ -281,42 +284,51 @@ namespace AI_Snakes.Snake
             }
         }
 
-        private bool IsOppositeDirection(Direction dir)
-        {
-            if (previousDir == Direction.Up && dir == Direction.Down)
-            {
-                return true;
-            }
-            if (previousDir == Direction.Right && dir == Direction.Left)
-            {
-                return true;
-            }
-            if (previousDir == Direction.Down && dir == Direction.Up)
-            {
-                return true;
-            }
-            if (previousDir == Direction.Left && dir == Direction.Right)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
+        //private bool IsOppositeDirection(Direction dir)
+        //{
+        //    if (previousDir == Direction.Up && dir == Direction.Down)
+        //    {
+        //        return true;
+        //    }
+        //    if (previousDir == Direction.Right && dir == Direction.Left)
+        //    {
+        //        return true;
+        //    }
+        //    if (previousDir == Direction.Down && dir == Direction.Up)
+        //    {
+        //        return true;
+        //    }
+        //    if (previousDir == Direction.Left && dir == Direction.Right)
+        //    {
+        //        return true;
+        //    }
+        //    else
+        //    {
+        //        return false;
+        //    }
+        //}
 
         private void Collision(string collidedObject)
         {
             if (collidedObject == "Food") 
             {
                 _howManyFruitsGotten++;
+                GameReset();
 //                _maxSize++;
-                _qualityPointScore += 1;
-                FoodGeneration();
+                //FoodGeneration();
             }
             if (collidedObject == "Snake" || collidedObject == "Wall")
             {
-                _qualityPointScore = -1;
+                GameReset();
+            }
+        }
+
+        private void WipeNowPlease()
+        {
+            if(_wipeNowPlease)
+            {
+                _wipeNowPlease = false;
+                GameReset();
             }
         }
 
@@ -329,16 +341,13 @@ namespace AI_Snakes.Snake
             {
                 Destroy(snakes[i]);
             }
-            Destroy(_currentFood);
+            //Destroy(CurrentFood);
         }
 
         private void GameReset()
         {
-            if (_qualityPointScore == -1)
-            {
-                WipeClean();
-                StartNextGeneration();
-            }
+            WipeClean();
+            StartNextGeneration();
         }
 
         public static GameController GetController() 
