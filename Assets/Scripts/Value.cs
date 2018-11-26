@@ -14,7 +14,9 @@ namespace AI_Snakes.Utility
         private double _down;
         private double _left;
 
-        public void SetValue(Direction dir, double value)
+        private double _fieldValue;
+
+        public void SetDirectionValue(Direction dir, double value)
         {
             switch (dir)
             {
@@ -33,7 +35,7 @@ namespace AI_Snakes.Utility
             }
         }
 
-        public double GetValue(Direction dir)
+        public double GetDirectionValue(Direction dir)
         {
             switch (dir)
             {
@@ -48,6 +50,15 @@ namespace AI_Snakes.Utility
                 default:
                     return 0;
             }
+        }
+
+        public void SetFieldValue(double value) {
+            _fieldValue = value;
+
+        }
+
+        public double GetFieldValue() {
+            return _fieldValue;
         }
     }
 }

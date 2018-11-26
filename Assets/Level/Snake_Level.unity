@@ -152,7 +152,7 @@ MonoBehaviour:
   _tail: {fileID: 0}
   IsTraining: 1
   _currentGeneration: 0
-  _movementPerSeconds: 1
+  _movementPerSeconds: 0
   _howManyFruitsGotten: 0
   _wipeNowPlease: 0
 --- !u!4 &597433730

@@ -136,8 +136,8 @@ namespace AI_Snakes.Snake
 
         private void FoodGeneration()
         {
-            int xPos = Random.Range(1, _fieldSize.x - 1);
-            int yPos = Random.Range(1, _fieldSize.y - 1);
+            var xPos = Random.Range(1, _fieldSize.x - 1);
+            var yPos = Random.Range(1, _fieldSize.y - 1);
 
             CurrentFood = Instantiate(_foodPrefab, new Vector2(1, 1), transform.rotation);
 
@@ -159,14 +159,14 @@ namespace AI_Snakes.Snake
                 case Direction.Up:
                     _nextPos = new Vector2(_nextPos.x, _nextPos.y + 1);
                     break;
+                case Direction.Right:
+                    _nextPos = new Vector2(_nextPos.x + 1, _nextPos.y);
+                    break;    
                 case Direction.Down:
                     _nextPos = new Vector2(_nextPos.x, _nextPos.y - 1);
                     break;
                 case Direction.Left:
                     _nextPos = new Vector2(_nextPos.x - 1, _nextPos.y);
-                    break;
-                default:
-                    _nextPos = new Vector2(_nextPos.x + 1, _nextPos.y);
                     break;
             }
 
@@ -185,10 +185,11 @@ namespace AI_Snakes.Snake
             _snake.CalculateQValueOfNextAction(dir);
             //_snake.SetBackwardsQValue(previousDir);
             _snake.SetRewardForAction(dir);
-            _snake.CollectCurrentMatrixData();
-            AIBrain.SaveQMatrix();
+//            _snake.CollectCurrentMatrixData();
+//            AIBrain.SaveQMatrix();
 
             Movement();
+//            print("Snake position is: " + Head.transform.position);
             //if (_size >= _maxSize)
             //{
             //    Tail();
@@ -212,10 +213,14 @@ namespace AI_Snakes.Snake
             _currentGeneration++;
             _maxSize = 1;
             _size = 1;
+            
+            var xPos = Random.Range(1, _fieldSize.x - 1);
+            var yPos = Random.Range(1, _fieldSize.y - 1);
 
             GameObject snakeHead;
-//            AIBrain.SaveQMatrix();
-            snakeHead = Instantiate(_snakePrefab, new Vector2(_fieldSize.x / 2, _fieldSize.y / 2), transform.rotation);
+            AIBrain.SaveQMatrix();
+            snakeHead = Instantiate(_snakePrefab, new Vector2(xPos, yPos), transform.rotation);
+//            snakeHead = Instantiate(_snakePrefab, new Vector2(_fieldSize.x / 2, _fieldSize.y / 2), transform.rotation);
             Head = snakeHead;
             _tail = snakeHead;
 
@@ -337,7 +342,7 @@ namespace AI_Snakes.Snake
         {
             _generationActive = false;
             GameObject[] snakes = GameObject.FindGameObjectsWithTag("Snake");
-//            _snake.CollectCurrentMatrixData();
+            _snake.CollectCurrentMatrixData();
             for (int i = 0; i < snakes.Length; i++)
             {
                 Destroy(snakes[i]);

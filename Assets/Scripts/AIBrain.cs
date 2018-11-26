@@ -45,15 +45,15 @@ namespace AI_Snakes.Snake
             {
                 for (var j = 0; j < _collectedMatrix.QualityMatrix.GetLength(1); j++)
                 {
-                    double up = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Up);
-                    double right = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Right);
-                    double down = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Down);
-                    double left = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Left);
+                    var up = _collectedMatrix.QualityMatrix[i, j].GetDirectionValue(Direction.Up);
+                    var right = _collectedMatrix.QualityMatrix[i, j].GetDirectionValue(Direction.Right);
+                    var down = _collectedMatrix.QualityMatrix[i, j].GetDirectionValue(Direction.Down);
+                    var left = _collectedMatrix.QualityMatrix[i, j].GetDirectionValue(Direction.Left);
 
-                    data.QualityMatrix[i, j].SetValue(Direction.Up, up);
-                    data.QualityMatrix[i, j].SetValue(Direction.Right, right);
-                    data.QualityMatrix[i, j].SetValue(Direction.Down, down);
-                    data.QualityMatrix[i, j].SetValue(Direction.Left, left);
+                    data.QualityMatrix[i, j].SetDirectionValue(Direction.Up, up);
+                    data.QualityMatrix[i, j].SetDirectionValue(Direction.Right, right);
+                    data.QualityMatrix[i, j].SetDirectionValue(Direction.Down, down);
+                    data.QualityMatrix[i, j].SetDirectionValue(Direction.Left, left);
 
                 }
             }

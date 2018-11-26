@@ -14,11 +14,12 @@ namespace AI_Snakes.Snake
         public static Action<String> hit;
 
         //private float _learningRateAlpha = 0.1f;
-        private float _discountRateGamma = 0.9f;
+        private double _discountRateGamma = 0.9;
         
         private AIBrain _brain;
         private GameController _gameController;
-        public QMatrix CurrentMatrix {get; private set;}
+        private QMatrix CurrentMatrix {get; set;}
+        private QMatrix RewardMatrix {get; set;}
         private Text _matrix;
         
         Direction dir = Direction.None;
@@ -28,6 +29,7 @@ namespace AI_Snakes.Snake
             _gameController = GameController.GetController();
             _brain = _gameController.AIBrain;
             CurrentMatrix = _brain.FindQMatrixForFood(_gameController.Food);
+            RewardMatrix = InitRewardMatrix(_gameController.Food);
             //            _matrix = GetComponent<Text>();
 
             //for (int i = 0; i < CurrentMatrix.QualityMatrix.GetLength(0); i++)
@@ -68,10 +70,10 @@ namespace AI_Snakes.Snake
             }
             else
             {
-                double up = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetValue(Direction.Up);
-                double right = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetValue(Direction.Right);
-                double down = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetValue(Direction.Down);
-                double left = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetValue(Direction.Left);
+                double up = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Up);
+                double right = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Right);
+                double down = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Down);
+                double left = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Left);
 
                 if (up > down && up > right && up > left)
                 {
@@ -143,28 +145,69 @@ namespace AI_Snakes.Snake
                     break;
             }
 
-            double q = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetValue(dir) + _discountRateGamma * GetQValueForEachAction(newStatus);
+            double q = RewardMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(dir) + _discountRateGamma * GetQValueForEachAction(dir);
 
-            //print(q);
-            CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetValue(dir, q);
+            print("R(status,action) is: " + RewardMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(dir));
+            print("Gamma is: " + _discountRateGamma);
+            print("Q(Status,action) is: " + q);
+            print("Old Snake position is: " + snakeHead);
+            print("New status position is: " + newStatus);
+
+            if(CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(dir) <= 0) 
+            {
+                CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetDirectionValue(dir, q);
+            }
         }
 
-        private double GetQValueForEachAction(Vector2 newStatus)
+        private double GetQValueForEachAction(Direction dir)
         {
             var snakeHead = _gameController.Head.transform.position;
-            double up;
-            double right;
-            double down;
-            double left;
+//            var up = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.y)].GetDirectionValue(Direction.Up);;
+//            var right = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.y)].GetDirectionValue(Direction.Right);;
+//            var down = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.x)].GetDirectionValue(Direction.Down);;
+//            var left = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.x)].GetDirectionValue(Direction.Left);;
+            double up = 0;
+            double right = 0;
+            double down = 0;
+            double left = 0;
+            
+            switch(dir) 
+            {
+                case Direction.Up:
+                    up = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y + 1)].GetDirectionValue(Direction.Up);
+                    right = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y + 1)].GetDirectionValue(Direction.Right);
+                    down = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y + 1)].GetDirectionValue(Direction.Down);
+                    left = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y + 1)].GetDirectionValue(Direction.Left);
+                    break;
+                case Direction.Right:
+                    up = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x + 1), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Up);
+                    right = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x + 1), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Right);
+                    down = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x + 1), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Down);
+                    left = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x + 1), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Left);
+                    break;
+                case Direction.Down:
+                    up = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y - 1)].GetDirectionValue(Direction.Up);
+                    right = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y - 1)].GetDirectionValue(Direction.Right);
+                    down = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y - 1)].GetDirectionValue(Direction.Down);
+                    left = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y - 1)].GetDirectionValue(Direction.Left);
+                    break;
+                case Direction.Left:
+                    up = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x - 1), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Up);
+                    right = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x - 1), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Right);
+                    down = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x - 1), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Down);
+                    left = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x - 1), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Left);
+                    break;
+            
+            }
+//            var up = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Up);
+//            var right = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Right);
+//            var down = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Down);
+//            var left = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Left);
 
-            up = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.y)].GetValue(Direction.Up);
-            right = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.y)].GetValue(Direction.Right);
-            down = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.x)].GetValue(Direction.Down);
-            left = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.x)].GetValue(Direction.Left);
-
-            print("Up:" + up + " | Right:" + right + " | Down:" + down + " | Left:" + left);
+            print("All action values of the new status: " + "Up:" + up + " | Right:" + right + " | Down:" + down + " | Left:" + left);
             List<double> value = new List<double> { up, right, down, left };
-            print(value.Max());
+            print("The max of QMax: " + value.Max());
+            
             return value.Max();
         }
 
@@ -178,29 +221,35 @@ namespace AI_Snakes.Snake
                 case Direction.Up:
                     if (snakeHead.x == food.x && snakeHead.y + 1 == food.y)
                     {
-                        CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetValue(dir, 1);
+                        RewardMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetDirectionValue(dir, 1);
                     }
                     break;
                 case Direction.Right:
                     if (snakeHead.x + 1 == food.x && snakeHead.y == food.y)
                     {
-                        CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetValue(dir, 1);
+                        RewardMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetDirectionValue(dir, 1);
                     }
                     break;
 
                 case Direction.Down:
                     if (snakeHead.x == food.x && snakeHead.y - 1 == food.y)
                     {
-                        CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetValue(dir, 1);
+                        RewardMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetDirectionValue(dir, 1);
                     }
                     break;
                 case Direction.Left:
                     if (snakeHead.x - 1 == food.x && snakeHead.y == food.y)
                     {
-                        CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetValue(dir, 1);
+                        RewardMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetDirectionValue(dir, 1);
                     }
                     break;
             }
+        }
+
+        private QMatrix InitRewardMatrix(Vector2Int food) {
+            QMatrix reward = new QMatrix(food);
+
+            return reward;
         }
 
         //private double GetValueOfAllActionWithReward()
