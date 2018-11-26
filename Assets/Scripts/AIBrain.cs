@@ -30,44 +30,44 @@ namespace AI_Snakes.Snake
             }
         }
 
-        //public void SaveQMatrix()
-        //{
-        //    if (_collectedMatrix == null)
-        //    {
-        //        return;
-        //    }
+        public void SaveQMatrix()
+        {
+            if (_collectedMatrix == null)
+            {
+                return;
+            }
 
-        //    var food = new Vector2Int(_collectedMatrix.X, _collectedMatrix.Y);
-        //    var data = new QMatrix();
-        //    data.Generations = _collectedMatrix.Generations++;
+            var food = new Vector2Int(_collectedMatrix.X, _collectedMatrix.Y);
+            var data = new QMatrix(food);
+            data.Generations = _collectedMatrix.Generations++;
 
-        //    for (var i = 0; i < _collectedMatrix.QualityMatrix.GetLength(0); i++)
-        //    {
-        //        for (var j = 0; j < _collectedMatrix.QualityMatrix.GetLength(1); j++)
-        //        {
-        //            double up = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Up);
-        //            double right = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Right);
-        //            double down = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Down);
-        //            double left = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Left);
+            for (var i = 0; i < _collectedMatrix.QualityMatrix.GetLength(0); i++)
+            {
+                for (var j = 0; j < _collectedMatrix.QualityMatrix.GetLength(1); j++)
+                {
+                    double up = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Up);
+                    double right = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Right);
+                    double down = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Down);
+                    double left = _collectedMatrix.QualityMatrix[i, j].GetValue(Direction.Left);
 
-        //            data.QualityMatrix[i, j].SetValue(Direction.Up, up);
-        //            data.QualityMatrix[i, j].SetValue(Direction.Right, right);
-        //            data.QualityMatrix[i, j].SetValue(Direction.Down, down);
-        //            data.QualityMatrix[i, j].SetValue(Direction.Left, left);
+                    data.QualityMatrix[i, j].SetValue(Direction.Up, up);
+                    data.QualityMatrix[i, j].SetValue(Direction.Right, right);
+                    data.QualityMatrix[i, j].SetValue(Direction.Down, down);
+                    data.QualityMatrix[i, j].SetValue(Direction.Left, left);
 
-        //        }
-        //    }
+                }
+            }
 
-        //    foreach (var matrix in _data)
-        //    {
-        //        if (matrix.GetCoordinateEquals(data.X, data.Y))
-        //        {
-        //            matrix.QualityMatrix = data.QualityMatrix;
-        //            return;
-        //        }
-        //    }
-        //    _collectedMatrix = null;
-        //    _data.Add(data);
-        //}
+            foreach (var matrix in _data)
+            {
+                if (matrix.GetCoordinateEquals(data.X, data.Y))
+                {
+                    matrix.QualityMatrix = data.QualityMatrix;
+                    return;
+                }
+            }
+            _collectedMatrix = null;
+            _data.Add(data);
+        }
     }
 }

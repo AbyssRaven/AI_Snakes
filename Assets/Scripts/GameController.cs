@@ -170,9 +170,10 @@ namespace AI_Snakes.Snake
                     break;
             }
 
-            snakeHead = Instantiate(_snakePrefab, _nextPos, transform.rotation);
-            Head.GetComponent<Snake>().SetNextHead(snakeHead);
-            Head = snakeHead;
+            Head.transform.position = _nextPos;
+            //snakeHead = Instantiate(_snakePrefab, _nextPos, transform.rotation);
+            //Head.GetComponent<Snake>().SetNextHead(snakeHead);
+            //Head = snakeHead;
 
             //_qualityPointScore -= 0.1f;
         }
@@ -182,21 +183,21 @@ namespace AI_Snakes.Snake
             dir = _snake.ChooseDirection();
             previousDir = dir;
             _snake.CalculateQValueOfNextAction(dir);
-            _snake.SetBackwardsQValue(previousDir);
+            //_snake.SetBackwardsQValue(previousDir);
             _snake.SetRewardForAction(dir);
-            //_snake.CollectCurrentMatrixData();
-            //            AIBrain.SaveQMatrix();
+            _snake.CollectCurrentMatrixData();
+            AIBrain.SaveQMatrix();
 
             Movement();
-            if (_size >= _maxSize)
-            {
-                Tail();
-            }
-            else
-            {
-                _size++;
-            }
-            print(dir);
+            //if (_size >= _maxSize)
+            //{
+            //    Tail();
+            //}
+            //else
+            //{
+            //    _size++;
+            //}
+            //print(dir);
         }
 
         public void Tail()
