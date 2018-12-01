@@ -31,14 +31,6 @@ namespace AI_Snakes.Snake
             CurrentMatrix = _brain.FindQMatrixForFood(_gameController.Food);
             RewardMatrix = InitRewardMatrix(_gameController.Food);
             //            _matrix = GetComponent<Text>();
-
-            //for (int i = 0; i < CurrentMatrix.QualityMatrix.GetLength(0); i++)
-            //{
-            //    for (int j = 0; j < CurrentMatrix.QualityMatrix.GetLength(1); j++)
-            //    {
-            //        Debug.Log(CurrentMatrix.QualityMatrix[i, j] + "\t");
-            //    }
-            //}
         }
         private void Update()
         {
@@ -46,19 +38,20 @@ namespace AI_Snakes.Snake
             //{
             //    CurrentMatrix = _brain.FindQMatrixForFood(_gameController.Food);
             //}
-
-            //            _matrix.text = CurrentMatrix.ToString();
         }
 
+        //Selects a new direction according to the bool _isTraining
         public Direction ChooseDirection() 
         {
             var snakeHead = _gameController.Head.transform.position;
 
+            //If all directions are block, do a game reset. Safty measure
             if (_gameController.IsWayBlocked(Direction.Up) && _gameController.IsWayBlocked(Direction.Right)
               && _gameController.IsWayBlocked(Direction.Down) && _gameController.IsWayBlocked(Direction.Left)) 
             {
                 _gameController.WipeClean();
             }
+            //random direction 
             if(_gameController.IsTraining) 
             {
                 dir = (Direction)Random.Range(0, 4);
@@ -68,6 +61,7 @@ namespace AI_Snakes.Snake
                     dir = (Direction)Random.Range(0, 4);
                 }
             }
+            //if _isTraining is false, select a direction with the highest QValue
             else
             {
                 double up = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(Direction.Up);
@@ -122,6 +116,7 @@ namespace AI_Snakes.Snake
         //    }
         //}
 
+        //Starts the Q algorithmus in here. Which means big math. Sets the new Q value of certain direction of a matrix field
         public void CalculateQValueOfNextAction(Direction dir)
         {
             var snakeHead = _gameController.Head.transform.position;
@@ -129,6 +124,7 @@ namespace AI_Snakes.Snake
 
             //var r = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetValue(dir);
 
+            //Sets the newStatus = Q(NewStatus, Action). This means the matrix space coordinate
             switch (dir)
             {
                 case Direction.Up:
@@ -145,6 +141,7 @@ namespace AI_Snakes.Snake
                     break;
             }
 
+            //Q algorithmus
             double q = RewardMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(dir) + _discountRateGamma * GetQValueForEachAction(dir);
 
             print("R(status,action) is: " + RewardMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(dir));
@@ -153,12 +150,14 @@ namespace AI_Snakes.Snake
             print("Old Snake position is: " + snakeHead);
             print("New status position is: " + newStatus);
 
+            //If the Q value is set, dotn set another value
             if(CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].GetDirectionValue(dir) <= 0) 
             {
                 CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetDirectionValue(dir, q);
             }
         }
 
+        //Calculation of Q(newStatus,action). Goes through all possible direction value, of the future field
         private double GetQValueForEachAction(Direction dir)
         {
             var snakeHead = _gameController.Head.transform.position;
@@ -211,6 +210,7 @@ namespace AI_Snakes.Snake
             return value.Max();
         }
 
+        //Sets the reward matrix, if a reward is found
         public void SetRewardForAction(Direction dir)
         {
             var snakeHead = _gameController.Head.transform.position;

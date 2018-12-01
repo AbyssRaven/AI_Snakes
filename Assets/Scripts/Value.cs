@@ -16,6 +16,7 @@ namespace AI_Snakes.Utility
 
         private double _fieldValue;
 
+        //Sets the Q value for a direction for a specific fieldSize position in the matrix
         public void SetDirectionValue(Direction dir, double value)
         {
             switch (dir)
@@ -35,6 +36,7 @@ namespace AI_Snakes.Utility
             }
         }
 
+        //Calls a q Value fro a direction for a specific fieldSize position in the matrix
         public double GetDirectionValue(Direction dir)
         {
             switch (dir)

@@ -12,6 +12,7 @@ namespace AI_Snakes.Utility
         public int Y { get; private set; }
         private int _generationAmount;
 
+        //Init the Quality Matrix, if its called. Usually gets called from Snake.cs, as a CurrentMatrix
         public QMatrix(Vector2Int food)
         {
             QualityMatrix = new Value[GameController.GetController().FieldSize.x, GameController.GetController().FieldSize.y];

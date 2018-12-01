@@ -70,6 +70,7 @@ namespace AI_Snakes.Snake
         {
             WipeNowPlease();
 
+            //After a set time, do a movement
             _movementCounter -= Time.deltaTime;
             if(_generationActive) 
             {
@@ -82,6 +83,7 @@ namespace AI_Snakes.Snake
             
         }
 
+        //Sets up the playing field of the simulation. Puts down field blocks and also wall blocks at the ends of the field
         private void CreateGameField()
         {
             Camera.main.transform.position = new Vector3(_fieldSize.x / 2, _fieldSize.y / 2, Camera.main.transform.position.z);
@@ -134,6 +136,7 @@ namespace AI_Snakes.Snake
             }
         }
 
+        //Generates food 
         private void FoodGeneration()
         {
             var xPos = Random.Range(1, _fieldSize.x - 1);
@@ -143,12 +146,11 @@ namespace AI_Snakes.Snake
 
             var foodLocation = CurrentFood.transform.position;
             Food = new Vector2Int(Mathf.RoundToInt(foodLocation.x), Mathf.RoundToInt(foodLocation.y));      
-
-//            RewardMatrix = SetRewardMatrixForFood(Food);
             
             print("Food coordinates:" + CurrentFood.transform.position.x + "," + CurrentFood.transform.position.y);
         }
 
+        //Perform a movemnt according to a the direction enum
         public void Movement()
         {
             GameObject snakeHead;
@@ -178,6 +180,7 @@ namespace AI_Snakes.Snake
             //_qualityPointScore -= 0.1f;
         }
         
+        //Repeats the movement action, and all its functions
         private void MovementRepeating() 
         {
             dir = _snake.ChooseDirection();
@@ -201,6 +204,7 @@ namespace AI_Snakes.Snake
             //print(dir);
         }
 
+        //Sets the next tail ends
         public void Tail()
         {
             GameObject snakeTail = _tail;
@@ -208,6 +212,7 @@ namespace AI_Snakes.Snake
             Destroy(snakeTail);
         }
 
+        //Starts a new generation
         private void StartNextGeneration() 
         {
             _currentGeneration++;
@@ -227,18 +232,7 @@ namespace AI_Snakes.Snake
             _generationActive = true;
         }
 
-//        private QMatrix SetRewardMatrixForFood(Vector2Int food) 
-//        {
-//            QMatrix matrix = new QMatrix(food);
-//
-//            matrix.QualityMatrix[food.x, food.y - 1].SetValue(Direction.Up, 1);
-//            matrix.QualityMatrix[food.x - 1, food.y].SetValue(Direction.Right, 1);
-//            matrix.QualityMatrix[food.x, food.y + 1].SetValue(Direction.Down, 1);
-//            matrix.QualityMatrix[food.x + 1, food.y].SetValue(Direction.Left, 1);
-//
-//            return matrix;
-//        }
-
+        //Looks if something is blocked
         private bool IsBlocked(Vector2 pos) 
         {
             if(pos.x > _blockedField.GetLength(0) - 1 || pos.y > _blockedField.GetLength(1) - 1 || pos.x < 0 || pos.y < 0 ) 
@@ -248,6 +242,7 @@ namespace AI_Snakes.Snake
             return _blockedField[Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y)];
         }
 
+        //Asks if the direction chosen, has a blocked field
         public bool IsWayBlocked(Direction dir) 
         {
             _blockedPos = Head.transform.position;
@@ -290,30 +285,32 @@ namespace AI_Snakes.Snake
             }
         }
 
-        //private bool IsOppositeDirection(Direction dir)
-        //{
-        //    if (previousDir == Direction.Up && dir == Direction.Down)
-        //    {
-        //        return true;
-        //    }
-        //    if (previousDir == Direction.Right && dir == Direction.Left)
-        //    {
-        //        return true;
-        //    }
-        //    if (previousDir == Direction.Down && dir == Direction.Up)
-        //    {
-        //        return true;
-        //    }
-        //    if (previousDir == Direction.Left && dir == Direction.Right)
-        //    {
-        //        return true;
-        //    }
-        //    else
-        //    {
-        //        return false;
-        //    }
-        //}
+        //Asks if the direction chosen was a previous one
+        private bool IsOppositeDirection(Direction dir)
+        {
+            if (previousDir == Direction.Up && dir == Direction.Down)
+            {
+                return true;
+            }
+            if (previousDir == Direction.Right && dir == Direction.Left)
+            {
+                return true;
+            }
+            if (previousDir == Direction.Down && dir == Direction.Up)
+            {
+                return true;
+            }
+            if (previousDir == Direction.Left && dir == Direction.Right)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
 
+        //Collison
         private void Collision(string collidedObject)
         {
             if (collidedObject == "Food") 
@@ -329,6 +326,7 @@ namespace AI_Snakes.Snake
             }
         }
 
+        //Activate game reset now becasue of bool _wipeNowPlease
         private void WipeNowPlease()
         {
             if(_wipeNowPlease)
@@ -338,6 +336,7 @@ namespace AI_Snakes.Snake
             }
         }
 
+        //Removes all food and snake pieces on the playing field
         public void WipeClean()
         {
             _generationActive = false;
@@ -350,6 +349,7 @@ namespace AI_Snakes.Snake
             //Destroy(CurrentFood);
         }
 
+        //Game reset
         private void GameReset()
         {
             WipeClean();
