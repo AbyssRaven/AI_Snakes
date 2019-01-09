@@ -4,9 +4,9 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Snake
-  - Food
   - Wall
+  - Goal
+  - AI
   layers:
   - Default
   - TransparentFX

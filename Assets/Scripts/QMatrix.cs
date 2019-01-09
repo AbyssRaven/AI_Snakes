@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using AI_Snakes.Snake;
+﻿using AI_Game.AI;
 using UnityEngine;
 
-namespace AI_Snakes.Utility 
+namespace AI_Game.Utility 
 {
     public class QMatrix 
     {
@@ -12,7 +11,7 @@ namespace AI_Snakes.Utility
         public int Y { get; private set; }
         private int _generationAmount;
 
-        //Init the Quality Matrix, if its called. Usually gets called from Snake.cs, as a CurrentMatrix
+        //Init the Quality Matrix, if its called. Usually gets called from AI.cs, as a CurrentMatrix
         public QMatrix(Vector2Int food)
         {
             QualityMatrix = new Value[GameController.GetController().FieldSize.x, GameController.GetController().FieldSize.y];

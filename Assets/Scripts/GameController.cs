@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using AI_Snakes.Snake;
-using AI_Snakes.Utility;
+using AI_Game.AI;
+using AI_Game.Utility;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR.WSA.Persistence;
 using Random = UnityEngine.Random;
 
-namespace AI_Snakes.Snake
+namespace AI_Game.AI
 {
     public class GameController : MonoBehaviour
     {
@@ -16,9 +16,9 @@ namespace AI_Snakes.Snake
 
         [SerializeField] private int _maxSize = 3;
         [SerializeField] private int _size = 1;
-        [SerializeField] private GameObject _snakePrefab;
-        [SerializeField] private GameObject _foodPrefab;
-        [SerializeField] public GameObject CurrentFood;
+        [SerializeField] private GameObject _aiPrefab;
+        [SerializeField] private GameObject _goalPrefab;
+        [SerializeField] public GameObject CurrentGoal;
         [SerializeField] public GameObject Head;
         [SerializeField] private GameObject _tail;
 
@@ -33,7 +33,7 @@ namespace AI_Snakes.Snake
         private float _movementCounter;
         private Vector2 _nextPos;
         private Vector2 _blockedPos;
-        private Snake _snake;
+        private AI _ai;
         private bool _generationActive;
 
         [SerializeField] private bool _wipeNowPlease = false;
@@ -43,7 +43,7 @@ namespace AI_Snakes.Snake
 
         private void OnEnable()
         {
-            Snake.hit += Collision;
+            AI.hit += Collision;
         }
 
         // Use this for initialization
@@ -57,12 +57,12 @@ namespace AI_Snakes.Snake
             _movementCounter = _movementPerSeconds;
             FoodGeneration();
             StartNextGeneration();
-            _snake = Snake.GetSnake();
+            _ai = AI.GetAI();
         }
 
         private void OnDisable()
         {
-            Snake.hit = Collision;
+            AI.hit = Collision;
         }
 
         // Update is called once per frame
@@ -136,24 +136,56 @@ namespace AI_Snakes.Snake
             }
         }
 
+        public void ColorGameField(double value)
+        {
+            var aiHead = Head.transform.position;
+            foreach (GameObject field in _gameField)
+            {
+                if(field.transform.position.x == aiHead.x && field.transform.position.y == aiHead.y)
+                {
+                    print("ColorGameField has been activated and value is: " + value);
+                    if(value > 0.90)
+                    {
+                        field.transform.GetComponent<Renderer>().material.color = new Color(1, 0.2f, 0.1f);
+                    }
+                    if (value <= 0.90 && value > 0.75)
+                    {
+                        field.transform.GetComponent<Renderer>().material.color = new Color(1, 0.4f, 0.2f);
+                    }
+                    if (value <= 0.75 && value > 0.50)
+                    {
+                        field.transform.GetComponent<Renderer>().material.color = new Color(1, 0.6f, 0.4f);
+                    }
+                    if (value <= 0.50 && value > 0.25)
+                    {
+                        field.transform.GetComponent<Renderer>().material.color = new Color(0, 0, 1);
+                    }
+                    if (value <= 0.25 && value > 0)
+                    {
+                        field.transform.GetComponent<Renderer>().material.color = new Color(0, 1, 1);
+                    }
+                }
+            }
+        }
+
         //Generates food 
         private void FoodGeneration()
         {
             var xPos = Random.Range(1, _fieldSize.x - 1);
             var yPos = Random.Range(1, _fieldSize.y - 1);
 
-            CurrentFood = Instantiate(_foodPrefab, new Vector2(1, 1), transform.rotation);
+            CurrentGoal = Instantiate(_goalPrefab, new Vector2(yPos, xPos), transform.rotation);
 
-            var foodLocation = CurrentFood.transform.position;
-            Food = new Vector2Int(Mathf.RoundToInt(foodLocation.x), Mathf.RoundToInt(foodLocation.y));      
+            var goalLocation = CurrentGoal.transform.position;
+            Goal = new Vector2Int(Mathf.RoundToInt(goalLocation.x), Mathf.RoundToInt(goalLocation.y));      
             
-            print("Food coordinates:" + CurrentFood.transform.position.x + "," + CurrentFood.transform.position.y);
+            print("Goal coordinates:" + CurrentGoal.transform.position.x + "," + CurrentGoal.transform.position.y);
         }
 
         //Perform a movemnt according to a the direction enum
         public void Movement()
         {
-            GameObject snakeHead;
+            GameObject goalHead;
             _nextPos = Head.transform.position;
 
             switch (dir)
@@ -183,11 +215,11 @@ namespace AI_Snakes.Snake
         //Repeats the movement action, and all its functions
         private void MovementRepeating() 
         {
-            dir = _snake.ChooseDirection();
+            dir = _ai.ChooseDirection();
             previousDir = dir;
-            _snake.CalculateQValueOfNextAction(dir);
+            _ai.CalculateQValueOfNextAction(dir);
             //_snake.SetBackwardsQValue(previousDir);
-            _snake.SetRewardForAction(dir);
+            _ai.SetRewardForAction(dir);
 //            _snake.CollectCurrentMatrixData();
 //            AIBrain.SaveQMatrix();
 
@@ -208,7 +240,7 @@ namespace AI_Snakes.Snake
         public void Tail()
         {
             GameObject snakeTail = _tail;
-            _tail = _tail.GetComponent<Snake>().GetNextHead();
+            _tail = _tail.GetComponent<AI>().GetNextHead();
             Destroy(snakeTail);
         }
 
@@ -224,7 +256,7 @@ namespace AI_Snakes.Snake
 
             GameObject snakeHead;
             AIBrain.SaveQMatrix();
-            snakeHead = Instantiate(_snakePrefab, new Vector2(xPos, yPos), transform.rotation);
+            snakeHead = Instantiate(_aiPrefab, new Vector2(xPos, yPos), transform.rotation);
 //            snakeHead = Instantiate(_snakePrefab, new Vector2(_fieldSize.x / 2, _fieldSize.y / 2), transform.rotation);
             Head = snakeHead;
             _tail = snakeHead;
@@ -313,14 +345,14 @@ namespace AI_Snakes.Snake
         //Collison
         private void Collision(string collidedObject)
         {
-            if (collidedObject == "Food") 
+            if (collidedObject == "Goal") 
             {
                 _howManyFruitsGotten++;
                 GameReset();
 //                _maxSize++;
                 //FoodGeneration();
             }
-            if (collidedObject == "Snake" || collidedObject == "Wall")
+            if (collidedObject == "AI" || collidedObject == "Wall")
             {
                 GameReset();
             }
@@ -340,11 +372,11 @@ namespace AI_Snakes.Snake
         public void WipeClean()
         {
             _generationActive = false;
-            GameObject[] snakes = GameObject.FindGameObjectsWithTag("Snake");
-            _snake.CollectCurrentMatrixData();
-            for (int i = 0; i < snakes.Length; i++)
+            GameObject[] ai = GameObject.FindGameObjectsWithTag("AI");
+            _ai.CollectCurrentMatrixData();
+            for (int i = 0; i < ai.Length; i++)
             {
-                Destroy(snakes[i]);
+                Destroy(ai[i]);
             }
             //Destroy(CurrentFood);
         }
@@ -366,7 +398,7 @@ namespace AI_Snakes.Snake
             get {return _fieldSize;}
         }
         
-        public Vector2Int Food {get; private set;}
+        public Vector2Int Goal {get; private set;}
         
         public QMatrix RewardMatrix {get; private set;}
         

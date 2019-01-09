@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using AI_Snakes.Utility;
+﻿using System.Collections.Generic;
+using AI_Game.Utility;
 using UnityEngine;
 
-namespace AI_Snakes.Snake
+namespace AI_Game.AI
 {
     public class AIBrain
     {
