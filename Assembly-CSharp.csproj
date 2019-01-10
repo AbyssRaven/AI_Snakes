@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\AI.cs" />
     <Compile Include="Assets\Scripts\AIBrain.cs" />
     <Compile Include="Assets\Scripts\GameController.cs" />
+    <Compile Include="Assets\Scripts\MainMenu.cs" />
     <Compile Include="Assets\Scripts\QMatrix.cs" />
     <Compile Include="Assets\Scripts\Utility.cs" />
     <Compile Include="Assets\Scripts\Value.cs" />

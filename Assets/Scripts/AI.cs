@@ -29,14 +29,6 @@ namespace AI_Game.AI
             _brain = _gameController.AIBrain;
             CurrentMatrix = _brain.FindQMatrixForFood(_gameController.Goal);
             RewardMatrix = InitRewardMatrix(_gameController.Goal);
-            //            _matrix = GetComponent<Text>();
-        }
-        private void Update()
-        {
-            //if (_gameController.Head == this.gameObject)
-            //{
-            //    CurrentMatrix = _brain.FindQMatrixForFood(_gameController.Food);
-            //}
         }
 
         //Selects a new direction according to the bool _isTraining
@@ -56,7 +48,6 @@ namespace AI_Game.AI
                 dir = (Direction)Random.Range(0, 4);
                 while(_gameController.IsWayBlocked(dir)) 
                 {
-                    //CurrentMatrix.QualityMatrix[Mathf.RoundToInt(snakeHead.x), Mathf.RoundToInt(snakeHead.y)].SetValue(dir, -1);
                     dir = (Direction)Random.Range(0, 4);
                 }
             }
@@ -90,7 +81,6 @@ namespace AI_Game.AI
                     dir = (Direction)Random.Range(0, 4);
                 }
             }
-
             return dir;
         }
 
@@ -121,13 +111,6 @@ namespace AI_Game.AI
             //This means that the formula is calculating the value of what the new q should be, so it can set it later into the Q matrix.           
             double q = RewardMatrix.QualityMatrix[Mathf.RoundToInt(aiHead.x), Mathf.RoundToInt(aiHead.y)].GetDirectionValue(dir) + _discountRateGamma * GetQValueForEachAction(dir);
 
-            //Prints to keep an overview, while testing.
-            //print("R(status,action) is: " + RewardMatrix.QualityMatrix[Mathf.RoundToInt(aiHead.x), Mathf.RoundToInt(aiHead.y)].GetDirectionValue(dir));
-            //print("Gamma is: " + _discountRateGamma);
-            //print("Q(Status,action) is: " + q);
-            //print("Old Snake position is: " + aiHead);
-            //print("New status position is: " + newStatus);
-
             //If the Q value is set, dont set another value. 
             if(CurrentMatrix.QualityMatrix[Mathf.RoundToInt(aiHead.x), Mathf.RoundToInt(aiHead.y)].GetDirectionValue(dir) <= 0) 
             {
@@ -137,6 +120,7 @@ namespace AI_Game.AI
             GetSurroundingQValues();
         }
 
+        //Checks up the Q value of the field the player is on. Sends the value to GameController to color the field with a color
         private void GetSurroundingQValues()
         {
             var aiHead = _gameController.Head.transform.position;

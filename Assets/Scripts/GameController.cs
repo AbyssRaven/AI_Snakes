@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using AI_Game.AI;
-using AI_Game.Utility;
+﻿using AI_Game.Utility;
+using AI_Game.Menu;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.XR.WSA.Persistence;
 using Random = UnityEngine.Random;
 
 namespace AI_Game.AI
@@ -24,9 +19,8 @@ namespace AI_Game.AI
 
         [SerializeField] public bool IsTraining = true;
         [SerializeField] private int _currentGeneration = 0;
-        //[SerializeField] private float _qualityPointScore;
         [SerializeField] [Range(0, 1)] private float _movementPerSeconds;
-        [SerializeField] private int _howManyFruitsGotten;
+        [SerializeField] private int _howManyGoalsFound;
 
         private GameObject[,] _gameField;
         private bool[,] _blockedField;
@@ -34,7 +28,10 @@ namespace AI_Game.AI
         private Vector2 _nextPos;
         private Vector2 _blockedPos;
         private AI _ai;
+        private MainMenu _mainMenu;
         private bool _generationActive;
+        public int SizeX;
+        public int SizeY;
 
         [SerializeField] private bool _wipeNowPlease = false;
 
@@ -49,8 +46,10 @@ namespace AI_Game.AI
         // Use this for initialization
         void Start() 
         {
-            _howManyFruitsGotten = 0;
-            
+            _howManyGoalsFound = 0;
+            _mainMenu = MainMenu.GetMenu();
+            print(SizeX);
+
             CreateGameField();
             AIBrain = new AIBrain();
             
@@ -69,7 +68,6 @@ namespace AI_Game.AI
         void Update() 
         {
             WipeNowPlease();
-
             //After a set time, do a movement
             _movementCounter -= Time.deltaTime;
             if(_generationActive) 
@@ -203,13 +201,7 @@ namespace AI_Game.AI
                     _nextPos = new Vector2(_nextPos.x - 1, _nextPos.y);
                     break;
             }
-
             Head.transform.position = _nextPos;
-            //snakeHead = Instantiate(_snakePrefab, _nextPos, transform.rotation);
-            //Head.GetComponent<Snake>().SetNextHead(snakeHead);
-            //Head = snakeHead;
-
-            //_qualityPointScore -= 0.1f;
         }
         
         //Repeats the movement action, and all its functions
@@ -218,22 +210,8 @@ namespace AI_Game.AI
             dir = _ai.ChooseDirection();
             previousDir = dir;
             _ai.CalculateQValueOfNextAction(dir);
-            //_snake.SetBackwardsQValue(previousDir);
             _ai.SetRewardForAction(dir);
-//            _snake.CollectCurrentMatrixData();
-//            AIBrain.SaveQMatrix();
-
             Movement();
-//            print("Snake position is: " + Head.transform.position);
-            //if (_size >= _maxSize)
-            //{
-            //    Tail();
-            //}
-            //else
-            //{
-            //    _size++;
-            //}
-            //print(dir);
         }
 
         //Sets the next tail ends
@@ -257,7 +235,6 @@ namespace AI_Game.AI
             GameObject snakeHead;
             AIBrain.SaveQMatrix();
             snakeHead = Instantiate(_aiPrefab, new Vector2(xPos, yPos), transform.rotation);
-//            snakeHead = Instantiate(_snakePrefab, new Vector2(_fieldSize.x / 2, _fieldSize.y / 2), transform.rotation);
             Head = snakeHead;
             _tail = snakeHead;
 
@@ -297,10 +274,6 @@ namespace AI_Game.AI
             {
                 return true;
             }
-            //            if (IsOppositeDirection(dir))
-            //            {
-            //                return true;
-            //            }
 
             switch (dir) 
             {
@@ -347,10 +320,8 @@ namespace AI_Game.AI
         {
             if (collidedObject == "Goal") 
             {
-                _howManyFruitsGotten++;
+                _howManyGoalsFound++;
                 GameReset();
-//                _maxSize++;
-                //FoodGeneration();
             }
             if (collidedObject == "AI" || collidedObject == "Wall")
             {
@@ -378,7 +349,6 @@ namespace AI_Game.AI
             {
                 Destroy(ai[i]);
             }
-            //Destroy(CurrentFood);
         }
 
         //Game reset

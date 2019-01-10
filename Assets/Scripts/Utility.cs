@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using AI_Game.Utility;
-using System.Linq;
-using Random = UnityEngine.Random;
-using UnityEngine;
-using UnityEngine.UI;
+
 
 namespace AI_Game.Utility
 {
-    public class Utility 
-    {
-    }
-
     public static class MoreMath
     {
         // This method only exists for ease of usage, because there doesnt exist an easier way to find the max of a group of doubles
@@ -37,8 +28,6 @@ namespace AI_Game.Utility
         public int y;
     }
     
-   
-
     public enum Direction
     {
         Up,
