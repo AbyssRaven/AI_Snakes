@@ -142,23 +142,23 @@ namespace AI_Game.AI
                 if(field.transform.position.x == aiHead.x && field.transform.position.y == aiHead.y)
                 {
                     print("ColorGameField has been activated and value is: " + value);
-                    if(value > 0.90)
+                    if(value >= 0.90)
                     {
                         field.transform.GetComponent<Renderer>().material.color = new Color(1, 0.2f, 0.1f);
                     }
-                    if (value <= 0.90 && value > 0.75)
+                    if (value < 0.90 && value >= 0.75)
                     {
                         field.transform.GetComponent<Renderer>().material.color = new Color(1, 0.4f, 0.2f);
                     }
-                    if (value <= 0.75 && value > 0.50)
+                    if (value < 0.75 && value >= 0.50)
                     {
                         field.transform.GetComponent<Renderer>().material.color = new Color(1, 0.6f, 0.4f);
                     }
-                    if (value <= 0.50 && value > 0.25)
+                    if (value < 0.50 && value >= 0.25)
                     {
                         field.transform.GetComponent<Renderer>().material.color = new Color(0, 0, 1);
                     }
-                    if (value <= 0.25 && value > 0)
+                    if (value < 0.25 && value > 0)
                     {
                         field.transform.GetComponent<Renderer>().material.color = new Color(0, 1, 1);
                     }
