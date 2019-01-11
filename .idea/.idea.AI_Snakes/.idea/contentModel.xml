@@ -15,10 +15,11 @@
           </e>
         </e>
         <e p="Scripts" t="Include">
+          <e p="AI.cs" t="Include" />
           <e p="AIBrain.cs" t="Include" />
           <e p="GameController.cs" t="Include" />
+          <e p="MainMenu.cs" t="Include" />
           <e p="QMatrix.cs" t="Include" />
-          <e p="Snake.cs" t="Include" />
           <e p="Utility.cs" t="Include" />
           <e p="Value.cs" t="Include" />
         </e>

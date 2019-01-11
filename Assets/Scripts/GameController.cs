@@ -214,14 +214,6 @@ namespace AI_Game.AI
             Movement();
         }
 
-        //Sets the next tail ends
-        public void Tail()
-        {
-            GameObject snakeTail = _tail;
-            _tail = _tail.GetComponent<AI>().GetNextHead();
-            Destroy(snakeTail);
-        }
-
         //Starts a new generation
         private void StartNextGeneration() 
         {
@@ -290,31 +282,6 @@ namespace AI_Game.AI
             }
         }
 
-        //Asks if the direction chosen was a previous one
-        private bool IsOppositeDirection(Direction dir)
-        {
-            if (previousDir == Direction.Up && dir == Direction.Down)
-            {
-                return true;
-            }
-            if (previousDir == Direction.Right && dir == Direction.Left)
-            {
-                return true;
-            }
-            if (previousDir == Direction.Down && dir == Direction.Up)
-            {
-                return true;
-            }
-            if (previousDir == Direction.Left && dir == Direction.Right)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         //Collison
         private void Collision(string collidedObject)
         {
@@ -369,8 +336,6 @@ namespace AI_Game.AI
         }
         
         public Vector2Int Goal {get; private set;}
-        
-        public QMatrix RewardMatrix {get; private set;}
         
         public AIBrain AIBrain { get; private set; }
     }

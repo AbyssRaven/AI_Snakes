@@ -21,12 +21,6 @@ namespace AI_Game.Utility
             return Math.Max(w, Math.Max(x, Math.Max(y, z)));
         }
     }
-
-    public struct pos 
-    {
-        public int x;
-        public int y;
-    }
     
     public enum Direction
     {
