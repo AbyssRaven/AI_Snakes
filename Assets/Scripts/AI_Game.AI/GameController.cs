@@ -18,8 +18,8 @@ namespace AI_Game.AI
         [SerializeField] private GameObject _tail;
 
         [SerializeField] public bool IsTraining = true;
-        [SerializeField] private int _currentGeneration = 0;
-        [SerializeField] [Range(0, 1)] private float _movementPerSeconds;
+        [SerializeField] public int CurrentGeneration = 0;
+        [SerializeField] [Range(0, 1)] public float MovementPerSeconds;
         [SerializeField] private int _howManyGoalsFound;
 
         private GameObject[,] _gameField;
@@ -33,7 +33,7 @@ namespace AI_Game.AI
         public int SizeX;
         public int SizeY;
 
-        [SerializeField] private bool _wipeNowPlease = false;
+        [SerializeField] public bool WipeNowPlease = false;
 
         Direction dir = Direction.None;
         Direction previousDir;
@@ -52,7 +52,7 @@ namespace AI_Game.AI
             CreateGameField();
             AIBrain = new AIBrain();
             
-            _movementCounter = _movementPerSeconds;
+            _movementCounter = MovementPerSeconds;
             FoodGeneration();
             StartNextGeneration();
             _ai = AI.GetAI();
@@ -66,7 +66,7 @@ namespace AI_Game.AI
         // Update is called once per frame
         void Update() 
         {
-            WipeNowPlease();
+            WipeNowPleaseButton();
             //After a set time, do a movement
             _movementCounter -= Time.deltaTime;
             if(_generationActive) 
@@ -74,7 +74,7 @@ namespace AI_Game.AI
                 if(_movementCounter < 0) 
                 {
                     MovementRepeating();
-                    _movementCounter = _movementPerSeconds;
+                    _movementCounter = MovementPerSeconds;
                 }
             }
             
@@ -216,7 +216,7 @@ namespace AI_Game.AI
         //Starts a new generation
         private void StartNextGeneration() 
         {
-            _currentGeneration++;
+            CurrentGeneration++;
             _maxSize = 1;
             _size = 1;
             
@@ -296,11 +296,11 @@ namespace AI_Game.AI
         }
 
         //Activate game reset now becasue of bool _wipeNowPlease
-        private void WipeNowPlease()
+        private void WipeNowPleaseButton()
         {
-            if(_wipeNowPlease)
+            if(WipeNowPlease)
             {
-                _wipeNowPlease = false;
+                WipeNowPlease = false;
                 GameReset();
             }
         }
