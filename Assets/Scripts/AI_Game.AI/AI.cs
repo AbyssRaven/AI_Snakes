@@ -88,24 +88,6 @@ namespace AI_Game.AI
         public void CalculateQValueOfNextAction(Direction dir)
         {
             var aiHead = _gameController.Head.transform.position;
-            Vector2 newStatus = new Vector2();
-
-            //Sets the newStatus = Q(NewStatus, Action). This means the matrix space coordinate
-            switch (dir)
-            {
-                case Direction.Up:
-                    newStatus = new Vector2(aiHead.x, aiHead.y + 1);
-                    break;
-                case Direction.Right:
-                    newStatus = new Vector2(aiHead.x + 1, aiHead.y);
-                    break;
-                case Direction.Down:
-                    newStatus = new Vector2(aiHead.x, aiHead.y - 1) ;
-                    break;
-                case Direction.Left:
-                    newStatus = new Vector2(aiHead.x - 1, aiHead.y);
-                    break;
-            }
 
             //Q algorithmus. q is the value that will be put into the "Action" part of the formula. Q(Status, q) is how it should be. 
             //This means that the formula is calculating the value of what the new q should be, so it can set it later into the Q matrix.           
@@ -114,8 +96,11 @@ namespace AI_Game.AI
             //If the Q value is set, dont set another value. 
             if(CurrentMatrix.QualityMatrix[Mathf.RoundToInt(aiHead.x), Mathf.RoundToInt(aiHead.y)].GetDirectionValue(dir) <= 0) 
             {
-                //The q that we calculated before is now set as the Q value of the direction we are going to
-                CurrentMatrix.QualityMatrix[Mathf.RoundToInt(aiHead.x), Mathf.RoundToInt(aiHead.y)].SetDirectionValue(dir, q);
+                //if(q <= 1)
+                //{
+                    //The q that we calculated before is now set as the Q value of the direction we are going to
+                    CurrentMatrix.QualityMatrix[Mathf.RoundToInt(aiHead.x), Mathf.RoundToInt(aiHead.y)].SetDirectionValue(dir, q);
+                //}
             }
             GetSurroundingQValues();
         }
@@ -138,10 +123,6 @@ namespace AI_Game.AI
         private double GetQValueForEachAction(Direction dir)
         {
             var aiHead = _gameController.Head.transform.position;
-//            var up = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.y)].GetDirectionValue(Direction.Up);;
-//            var right = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.y)].GetDirectionValue(Direction.Right);;
-//            var down = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.x)].GetDirectionValue(Direction.Down);;
-//            var left = CurrentMatrix.QualityMatrix[Mathf.RoundToInt(newStatus.x), Mathf.RoundToInt(newStatus.x)].GetDirectionValue(Direction.Left);;
             double up = 0;
             double right = 0;
             double down = 0;

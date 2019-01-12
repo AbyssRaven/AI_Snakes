@@ -47,7 +47,6 @@ namespace AI_Game.AI
         void Start() 
         {
             _howManyGoalsFound = 0;
-            _mainMenu = MainMenu.GetMenu();
             print(SizeX);
 
             CreateGameField();
