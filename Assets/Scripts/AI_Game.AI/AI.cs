@@ -94,13 +94,13 @@ namespace AI_Game.AI
             double q = RewardMatrix.QualityMatrix[Mathf.RoundToInt(aiHead.x), Mathf.RoundToInt(aiHead.y)].GetDirectionValue(dir) + _discountRateGamma * GetQValueForEachAction(dir);
 
             //If the Q value is set, dont set another value. 
-            if(CurrentMatrix.QualityMatrix[Mathf.RoundToInt(aiHead.x), Mathf.RoundToInt(aiHead.y)].GetDirectionValue(dir) <= 0) 
+            if(CurrentMatrix.QualityMatrix[Mathf.RoundToInt(aiHead.x), Mathf.RoundToInt(aiHead.y)].GetDirectionValue(dir) <= q) 
             {
-                //if(q <= 1)
-                //{
+                if(q < 1.1)
+                {
                     //The q that we calculated before is now set as the Q value of the direction we are going to
                     CurrentMatrix.QualityMatrix[Mathf.RoundToInt(aiHead.x), Mathf.RoundToInt(aiHead.y)].SetDirectionValue(dir, q);
-                //}
+                }
             }
             GetSurroundingQValues();
         }
